@@ -1,0 +1,40 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block content %}
+    <div class= "page-style">
+        <div class="page-context">
+            <h1 class="text-topic">กลัวหรอ</h1>
+            <img src ="{% static 'app_general/home_line.png' %}">
+            <p>วิดีโอนี้มีอะไรที่คุณกลัวหรือเปล่า ถ้าอยากรู้ เราจะดูให้</p>
+        </div>
+
+        <div class="button-container">
+            <a href="{% url 'd01_import' %}">
+                <button class="button-next" type="button">เริ่มต้นใช้งาน</button>
+            </a>
+        </div>
+    </div>
+
+<style>
+    .page-style {
+        margin-top: 10%;
+    }
+    .page-context {
+        text-align: center;
+        color: white;
+    }
+    .page-context p {
+        font-size: 2em;
+        font-family: 'Kanit', sans-serif;
+        font-weight: normal;
+        color: #a7aab2;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+
+{% endblock %}

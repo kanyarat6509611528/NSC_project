@@ -1,0 +1,127 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="about-style">
+        <h1 class="text-topic">ไม่ใช่แค่คุณที่กลัว</h1>
+    </div>
+
+    <div class="frame-small">
+        <p class="text-head">สถิติการเลือกเบลอเนื้อหาของผู้ใช้งาน</p>
+        <hr>
+        <div class="row justify-content-center">
+            {% for phobia in phobias %}
+            <div class="col-md-3 col-sm-6 col-10">
+                <div class="box" style="background-color: {{ phobia.color }};">
+                    <p class="box-text">{{ phobia.name_TH }}({{ phobia.name_ENG }})</p>
+                    <span class="counter">{{ phobia.count }}</span>
+                    <p class="count-text">ครั้ง</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row fear-content">
+            <div>
+                <p class="fear-text">มีอะไรที่คุณกลัวอีกไหม</p>
+            </div>
+            <div class="form-container">
+                <form action="/submit-answer" method="POST">
+                    <input type="text" name="answer" placeholder="ระบุสิ่งที่คุณกลัว" required>
+                    <button class="button-go" type="submit">ส่งคำตอบ</button>
+                </form>
+            </div>
+        </div>
+    </form>
+
+<style>
+    .about-style {
+        text-align: center;
+        color: white;
+    }
+    .frame-small {
+        width: 70%;
+    }
+    .text-head {
+        text-align: left;
+        padding-left: 5%;
+        font-size: 1.5em;
+        color: #ffffff;
+    }
+    .frame-small hr {
+        margin: 20px auto;
+        border: none;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+    }
+    .box {
+        padding: 10px;
+        text-align: center;
+        margin-bottom: 20px;
+        text-align: center;
+        background-color: #c5c5e6;
+        border: 1px solid rgba(255, 255, 255, 0.1); /* Light grey border */
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7); /* Subtle shadow effect */
+    }
+    .box p{
+        text-align: center;
+        font-size: 15px;
+        color: #ffffff;
+    }
+    .counter { 
+        display: inline;
+        font-size: 50px;
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 28px
+    }
+    .count-text{
+        display: inline;
+    }
+    .fear-text{
+        font-size: 40px;
+        color: #a7a7a7;
+    }
+    .fear-content {
+        margin-top: 3%;
+        justify-content: space-between;
+        padding: 0 17%;
+    }
+    .form-container input[type="text"] {
+        width: 500px;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        margin-right: 10px;
+        box-sizing: border-box;
+    }
+    .button-go {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 50px;
+        color:black;
+    }
+    
+</style>
+
+<script>
+    $(document).ready(function () {
+        $('.counter').each(function () {
+            $(this).prop('Counter', 0).animate({
+                Counter: $(this).text()
+            }, {
+                duration: 4000,
+                easing: 'swing',
+                step: function (now) {
+                    $(this).text(Math.ceil(now));
+                }
+            });
+        });
+    });  
+</script>
+    
+{% endblock %}

@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>document</title>
+    <link rel="icon" href="{% static 'app_general/logo.jpg'%}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'app_general/style.css' %}">
+</head>
+
+<body>
+    <header>
+        <div class="header-frame">
+            <a href="{% url 'home' %}">หน้าหลัก</a>
+            <a href="{% url 'd01_import' %}">ตรวจสอบวิดีโอ</a>
+            <a href="{% url 'stat' %}">ข้อมูลสถิติ</a>
+            <a href="{% url 'about' %}">เกี่ยวกับผู้พัฒนา</a>
+        </div>
+        <div class="login-header">
+            {% if user.is_authenticated %}
+                <div class="dropdown">
+                    <a href="{% url 'profile' %}">สวัสดี คุณ {{ user.username }}</a>
+                    <a>
+                        <form action="{% url 'logout' %}" method="POST" class="ml-2">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">ออกจากระบบ</button>
+                        </form>
+                    </a>
+                </div>
+            {% else %}
+                <a href="{% url 'login' %}">เข้าสู่ระบบ</a>
+                <a href="{% url 'register' %}">สมัครสมาชิก</a>
+            {% endif %}
+        </div>
+    </header>
+
+    {% block content %}{% endblock %}
+
+</body>
+
+<style>
+    body {
+        background-image: url("{% static 'app_general/background.png' %}");
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+        margin: 0;
+        align-items: center;
+        height: 100vh;
+        position: relative;
+        font-family: 'Kanit', sans-serif;
+    }
+
+    .header-frame {
+        width: 50%;
+        padding: 15px 50px;
+        background-color: rgba(29, 31, 32, 0.58);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 20px auto;
+        display: flex;
+        justify-content: space-between;
+        text-align: center;
+    }
+
+    .header-frame a {
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+    .header-frame a:hover {
+        color: #c6a44e;
+        text-decoration: none;
+    }
+
+    .login-header {
+        position: absolute;
+        top: 0px;
+        right: 30px;
+        width: auto;
+        padding: 10px;
+        background-color: rgba(29, 31, 32, 0.58);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #ffffff;
+    }
+
+    .login-header a {
+        color: #ffffff;
+        text-decoration: none;
+        margin: 0 10px;
+    }
+
+    .login-header a:hover {
+        color: #c6a44e;
+        text-decoration: none;
+    }
+</style>
