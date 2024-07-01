@@ -1,0 +1,80 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block content %}
+
+{% include 'app_detection/components/statusBar.html' %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Left Column -->
+        <div class="col-md-4 d-flex justify-content-end">
+            <video width="324" height="576" controls>
+                <source src="{% static 'videos/sample.mp4' %}" type="video/mp4">
+            </video>
+        </div>
+        <!-- Right Column -->
+        <div class="col-md-7" style="margin-right: 20px;">
+            <div class="home-style">
+                <h1 class="text-topic">เสร็จสิ้น</h1>
+            </div>
+            <div class="frame-big">
+                <div class="frame-small">
+                    <p>วิดีโอมีการเบลอเนื้อหาดังต่อไปนี้</p>
+                    <ul>
+                        {% for phobia in selected_phobias %}
+                            <li>{{ phobia.name_TH }}({{ phobia.name_ENG }})</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="button-container">
+                    <a href="{% url 'd04_select' %}">
+                        <button class="button-back" type="button">เลือกเนื้อหาที่ต้องการหลีกเลี่ยงเพิ่มเติม</button>
+                    </a>
+                        <a href="{% url 'home' %}">
+                            <button class="button-next" type="button">กลับสู่หน้าหลัก</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+    <style>
+    .home-style {
+        text-align: center;
+        color: white;
+    }
+    .frame-big p {
+        text-align: left;
+        padding-left: 10%;
+        font-size: 1em;
+        color: #ffffff;
+    }
+    .frame-small {
+        width: 90%;
+        text-align: left;
+        padding-left: 5%;
+        font-size: 1em;
+        color: #ffffff;
+    }
+    .frame-small p {
+        text-align: left;
+        padding-left: 3%;
+        font-size: 1.5em;
+    }
+    .frame-small hr {
+        margin: 20px auto;
+        border: none;
+        border-top: 1px solid #ccc;
+        width: 90%; /* กำหนดความยาวของเส้น */
+    }
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 5%;
+    }
+</style>
+{% endblock %}

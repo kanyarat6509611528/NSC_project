@@ -1,0 +1,95 @@
+<div class="progress-container">
+    <div class="progress">
+        <div class="bar" id="progress-bar">0%</div>
+    </div>
+</div>
+
+<div class="frame-small">
+    <h3>คำแนะนำในการรับชมวิดีโอ</h3> <br>
+    <p2>คำเตือน: หากคุณมีอาการเหล่านี้ สามารถเลือกเบลอเนื้อหาบางส่วนเพื่อรับชมวิดีโอต่อหรือปิดวิดีโอ</p2>
+    
+    <div class="columns">
+        <ul>
+            <li>ตื่นกลัว วิตกกังวลรุนแรง</li>
+            <li>ควบคุมตัวเองไม่ได้</li>
+            <li>หัวใจเต้นเร็ว หายใจถี่</li>
+            <li>ความดันเลือดสูง</li>
+            <li>เหงื่อออก</li>
+        </ul>
+        
+        <ul>
+            <li>พูดติดขัด ปากแห้ง</li>
+            <li>คลื่นไส้</li>
+            <li>มือ เท้า หรือตัวสั่น</li>
+            <li>หมดสติ</li>
+            <li>ปวดศีรษะ เวียนศีรษะ</li>
+            </ul>
+    </div>
+</div>
+
+<style>
+    .columns {
+        column-count: 2;
+        text-align: left;
+        color: #bdbdbd;
+    }
+
+    .page-style {
+        text-align: center;
+        color: white;
+    }
+
+    .frame-small {
+        margin-top: 2%;
+        padding: 2% 3%;
+        width: 70%;
+        color: white;
+        text-align: left;
+    }
+    .frame-small p {
+        text-align: left;
+        padding-left: 5%;
+        font-size: 1em;
+    }
+
+    .progress-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .progress {
+        margin-top: 2%;
+        width: 70%;
+        height: 50px; /* Adjusted height for better visual */
+        border-radius: 10px;
+        background-color: #292929;
+        position: relative;
+    }
+
+    .bar {
+        height: 100%;
+        border-radius: 10px;
+        text-align: center;
+        line-height: 30px; /* Match line-height to height */
+        color: white;
+        font-weight: bold;
+        font-size: 20px;
+        background: linear-gradient(to right, #ff6417, #7000ff, #ff6417);
+        width: 0%;
+        transition: width 1s ease-in-out; /* Smooth transition */
+
+        background: linear-gradient(to right, #ff6417, #7000ff, #ff6417);
+        background-size: 200% 100%; /* Adjust size for the number of colors */
+        animation: rainbow 3s linear infinite, growBar 10s forwards;
+    }
+    @keyframes rainbow {
+        0% {
+            background-position: 100% 0;
+        }
+        100% {
+            background-position: -100% 0;
+        }
+    }
+</style>

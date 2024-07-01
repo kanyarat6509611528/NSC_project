@@ -1,0 +1,105 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="page-style">
+        {% include 'app_detection/components/statusBar.html' %}
+        <h1 class="text-topic">เลือกเนื้อหาที่ต้องการหลีกเลี่ยง</h1>
+    </div>
+
+    <div class="frame-big">
+        <div class="frame-small">
+            <p>เลือกเบลอเนื้อหาในวิดีโอที่ไม่ต้องการรับชม</p>
+            <hr>
+            
+            <form id="phobia-form" action="{% url 'd04_select' %}" method="post">
+                {% csrf_token %}
+                <div id="phobia-container">
+                    {% for phobia in phobias %}
+                        <div class="checkbox-wrapper">
+                            <div>
+                                <label class="switch" for="checkbox{{ phobia.id }}">
+                                    <input type="checkbox" id="checkbox{{ phobia.id }}" name="phobias" value="{{ phobia.id }}"/>
+                                    <div class="slider round"></div>
+                                </label>
+                                <p>{{ phobia.name_TH }}({{ phobia.name_ENG }})</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+        </div>
+                <div class="button-container">
+                    <a href="{% url 'd03_result' %}">
+                        <button class="button-back" type="button">ย้อนกลับ</button>
+                    </a>
+                    
+                    <button class="button-next" type="submit">ดำเนินการต่อ</button>
+                </div>
+                
+            </form>
+    </div>
+
+    <style>
+    .page-style {
+        text-align: center;
+        color: white;
+    }
+    .frame-big {
+        width: 80%;
+    }
+    .frame-small {
+        width: 50%;
+    }
+    .frame-small p {
+        text-align: left;
+        padding-left: 5%;
+        font-size: 1.5em;
+        color: #ffffff;
+    }
+    .frame-small hr {
+        margin: 20px auto;
+        border: none;
+        border-top: 1px solid #ccc;
+        width: 90%; /* กำหนดความยาวของเส้น */
+    }
+    .checkbox-wrapper {
+        text-align: left;
+        padding-left: 5%;
+        align-items: center;
+        margin-bottom: 2%;
+    }
+    .checkbox-wrapper p {
+        display: inline;
+        font-size: 1.3em;
+        color: #a9a29d;
+        vertical-align: middle;
+    }
+    .checkbox-wrapper .switch {
+        display: inline-block;
+        height: 34px;
+        position: relative;
+        width: 60px;
+        vertical-align: middle;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 24%;
+    }
+    </style>
+
+    <script>
+        document.getElementById('phobia-form').addEventListener('submit', function(event) {
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    checkbox.value = checkbox.getAttribute('value'); // Set value to phobia ID
+                } else {
+                    checkbox.value = '0'; // Unchecked value
+                }
+            });
+        });
+    </script>
+    
+{% endblock %}

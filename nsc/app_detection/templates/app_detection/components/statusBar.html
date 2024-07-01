@@ -1,0 +1,130 @@
+
+<div class="container">
+    <div class="steps">
+        <div>
+            <span class="circle {% if current_step == 1 %}active {% elif current_step > 1 %}success {% endif %}">1</span>
+            <p>นำเข้าวิดีโอ</p>
+        </div>
+        <div>
+            <span class="circle {% if current_step == 2 %}active {% elif current_step > 2 %}success {% endif %}">2</span>
+            <p>รอการประมวลผล</p>
+        </div>
+        <div>
+            <span class="circle {% if current_step == 3 %}active {% elif current_step > 3 %}success {% endif %}">3</span>
+            <p>ผลลัพธ์การประมวลผล</p>
+        </div>
+        <div>
+            <span class="circle {% if current_step == 4 %}active {% elif current_step > 4 %}success {% endif %}">4</span>
+            <p>เลือกเนื้อหาที่ต้องการหลีกเลี่ยง</p>
+        </div>
+        <div>
+            <span class="circle {% if current_step == 5 %}active {% elif current_step > 5 %}success {% endif %}">5</span>
+            <p>รอการประมวลผล</p>
+        </div>
+        <div>
+            <span class="circle {% if current_step == 6 %}success {% endif %}">6</span>
+            <p>เสร็จสิ้น</p>
+        </div>
+        <div class="progress-bar">
+            {% if current_step == 1 %}
+                <span class="indicator" style="width: 0%;"></span>
+            {% elif current_step == 2 %}
+                <span class="indicator" style="width: 18%;"></span>
+            {% elif current_step == 3 %}
+                <span class="indicator" style="width: 36%;"></span>
+            {% elif current_step == 4 %}
+                <span class="indicator" style="width: 60%;"></span>
+            {% elif current_step == 5 %}
+                <span class="indicator" style="width: 85%;"></span>
+            {% elif current_step == 6 %}
+                <span class="indicator" style="width: 100%;"></span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .container {
+    text-align: center;
+    margin: 20px auto;
+    padding: 20px;
+    width: 60%;
+    }
+
+    .steps {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        min-width: 60px;
+        flex-grow: 1;
+        font-size: 14px;
+        color: #999;
+        
+    }
+
+    .circle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+        margin-bottom: 10px;
+        height: 30px;
+        width: 30px;
+        color: #999;
+        font-size: 18px;
+        font-weight: 500;
+        border-radius: 50%;
+        background: #fff;
+        border: 4px solid #e0e0e0;
+    }
+
+    .circle.active {
+        height: 40px;
+        width: 40px;
+        background: radial-gradient(circle,#ffffff 1%,  #4070f4,  #4070f4 );
+        background-size: 200% 200%;
+        background-position: center;
+        animation: gradientAnimation 2s ease infinite;
+        border-color: #4070f4;
+        color: #ffffff;
+    }
+
+        @keyframes gradientAnimation {
+            0% {
+                background-size: 100% 100%;
+            }
+            50% {
+                background-size: 200% 200%;
+            }
+            100% {
+                background-size: 100% 100%; 
+            }   
+        }
+
+    .circle.success {
+        background: #4070f4;
+        color: #fff;
+        border-color: #4070f4;
+    }
+
+    .progress-bar {
+        position: absolute;
+        top: 20%;
+        left: 3%;
+        transform: translateY(-50%);
+        height: 4px;
+        width: 95%;
+        background: #e0e0e0;
+        z-index: -1;
+    }
+
+    .progress-bar .indicator {
+        position: absolute;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: #4070f4;
+    }
+</style>

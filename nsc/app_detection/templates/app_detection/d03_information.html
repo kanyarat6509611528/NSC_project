@@ -1,0 +1,28 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block content %}
+
+{% include 'app_detection/components/statusBar.html' %}
+    <div class="home-style">
+        <h1 class="text-topic">รายละเอียดเนื้อหาในวิดีโอ</h1>
+
+        <div class="button-container">
+            <a href="{% url 'd04_select' %}">
+                <button class="button-next" type="button">เลือกเนื้อหาที่ต้องการหลีกเลี่ยง</button>
+            </a>
+        </div>
+    </div>
+    {% for phobia in phobias %}
+        {% include 'app_detection/components/gallery.html' %}  
+    {% endfor %}
+<style>
+    .home-style {
+        display: flex;
+        justify-content: space-between; /* Align items with space in between */
+        align-items: center;
+        padding: 0 15%;
+    }
+
+</style>
+    
+{% endblock %}

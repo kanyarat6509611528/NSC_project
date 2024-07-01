@@ -1,0 +1,79 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block content %}
+
+{% include 'app_detection/components/statusBar.html' %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Left Column -->
+        <div class="col-md-4 d-flex justify-content-end">
+            <video width="324" height="576" controls>
+                <source src="{% static 'app_detection/media/download_video.mp4' %}" type="video/mp4">
+            </video>
+        </div>
+        <!-- Right Column -->
+        <div class="col-md-7" style="margin-right: 20px;">
+            <div class="home-style">
+                <h1 class="text-topic">ผลลัพธ์การประมวลผล</h1>
+            </div>
+            <div class="frame-big">
+                <div class="context">
+                    <p> เนื้อหาในวิดีโอส่วนใหญ่เกี่ยวข้องกับ {{ max_name }} </p>
+                    <p>  คิดเป็น {{ max_percent }} % </p>
+                </div>
+
+                <div class="frame-small">
+                    <p>สัดส่วนเนื้อหาในวิดีโอ</p>
+                    <hr>
+                    {% include 'app_detection/components/barChart.html' %}
+                </div>
+
+                <div class="button-container">
+                    <a href="{% url 'd03_information' %}">
+                        <button class="button-back" type="button">รายละเอียด</button>
+                    </a>
+                    <a href="{% url 'd04_select' %}">
+                        <button class="button-next" type="button">เลือกเนื้อหาที่ต้องการหลีกเลี่ยง</button>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .home-style {
+        text-align: center;
+        color: white;
+    }
+    .frame-big p {
+        text-align: left;
+        padding-left: 10%;
+        font-size: 1em;
+        color: #ffffff;
+    }
+    .frame-small {
+        width: 90%;
+    }
+    .frame-small p {
+        text-align: left;
+        padding-left: 5%;
+        font-size: 1em;
+        color: #ffffff;
+    }
+    .frame-small hr {
+        margin: 20px auto;
+        border: none;
+        border-top: 1px solid #ccc;
+        width: 90%; /* กำหนดความยาวของเส้น */
+    }
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 5%;
+    }
+</style>
+    
+{% endblock %}

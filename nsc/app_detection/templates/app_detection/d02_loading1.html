@@ -1,0 +1,31 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block content %}
+<div class="page-style">
+    {% include 'app_detection/components/statusBar.html' %}
+    <h1 class="text-topic">กรุณารอสักครู่</h1>
+</div>
+
+{% include 'app_detection/components/loadBar.html' %}
+
+<script>
+    const progressBar = document.getElementById('progress-bar');
+    const Percentage = {{ percent }};
+    let i = 0;
+
+    const interval = setInterval(() => {
+        progressBar.style.width = Percentage[i] + '%';
+        progressBar.innerHTML = Percentage[i] + '%';
+        i++;
+
+        if (Percentage[i - 1] === 100) {
+            clearInterval(interval);
+            progressBar.innerHTML = "Completed";
+            setTimeout(() => {
+                window.location.href = "{% url 'd03_result' %}";
+            }, 3000);
+        }
+    }, 1000);
+</script>
+
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="home-style">
+        {% include 'app_detection/components/statusBar.html' %}
+        <h1 class="text-topic">นำเข้าวิดีโอ</h1>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <div class="form-column">
+                <label for="video-url">แนบลิงก์ URL วิดีโอ:</label>
+                <input type="url" id="video-url" name="video_url" placeholder="กรอกลิงก์ URL วิดีโอ">
+            </div>
+            <div class="form-column col-md-3">
+                <button class="button-go" type="submit" name="submit_type" value="url">ถัดไป</button>
+            </div>
+        </div>
+    </form>
+    
+    <div class="center">
+        <img src="{% static 'app_detection/import_line.png' %}">
+    </div>
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <div class="form-column">
+                <label for="video-file">แนบไฟล์วิดีโอ:</label>
+                <input type="file" id="video-file" name="video_file">
+            </div>    
+            <div class="form-column col-md-3">
+                <button class="button-go" type="submit" name="submit_type" value="file">ถัดไป</button>  
+            </div>
+        </div>
+    </form>
+    
+<style>
+    .home-style {
+        text-align: center;
+        color: white;
+    }
+    .button-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .button-go {
+        border: none;
+        border-radius: 50px;
+        color:black;
+        margin-top: 25px;
+    }
+    
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .form-group {
+        width: 50%;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        color: #fff;
+        justify-content: space-between;
+    }
+    .form-column {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+    
+    .form-group label {
+        margin-bottom: 5px;
+        font-size: 16px;
+        color: #5f5e60;
+    }
+    
+    .form-group input {
+        width: 100%;
+        padding: 10px 30px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+
+    .center {
+        text-align: center;
+    }
+    
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Select URL form and add event listener
+        var urlForm = document.querySelector('form[method="post"][enctype="multipart/form-data"]:nth-of-type(1)');
+        urlForm.addEventListener('submit', function(event) {
+            var urlInput = urlForm.querySelector('input[type="url"]');
+            if (urlInput.value.trim() === '') {
+                event.preventDefault();
+                alert('โปรดแนบลิงก์ URL วิดีโอ');
+            }
+        });
+
+        // Select file upload form and add event listener
+        var fileForm = document.querySelector('form[method="post"][enctype="multipart/form-data"]:nth-of-type(2)');
+        fileForm.addEventListener('submit', function(event) {
+            var fileInput = fileForm.querySelector('input[type="file"]');
+            if (fileInput.value.trim() === '') {
+                event.preventDefault();
+                alert('โปรดแนบไฟล์วิดีโอ');
+            }
+        });
+    });
+</script>
+
+{% endblock %}
