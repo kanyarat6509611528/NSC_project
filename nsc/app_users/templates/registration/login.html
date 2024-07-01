@@ -1,0 +1,29 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+        <form action="{% url 'login' %}" method="POST">
+            {% csrf_token %}
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control" name="username" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" name="password" id="password" required>
+                </div>
+                {% if request.GET.next %}
+                    <input type="hidden" name="next" value="{{ request.GET.next }}"
+                {% endif %}
+
+                <button type="submit" class="btn btn-primary">เข้าสู่ระบบ</button>
+            </div>
+        </form>
+</div>
+<style>
+    .container {
+        color: #fff;
+    }
+</style>
+{% endblock %}

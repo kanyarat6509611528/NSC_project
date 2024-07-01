@@ -1,0 +1,15 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <p> สวัสดี {{ user.username }} </p>
+    <a href="{% url 'password_change' %}">เปลี่ยนรหัสผ่าน</a>
+</div>
+
+
+<style>
+    .container {
+        color: #fff;
+    }
+</style>
+{% endblock %}
