@@ -8,7 +8,7 @@
         <!-- Left Column -->
         <div class="col-md-4 d-flex justify-content-end">
             <video width="324" height="576" controls>
-                <source src="{% static 'videos/blurred_video_with_audio.mp4' %}" type="video/mp4">
+                <source src="{% static 'app_detection/video/blurred_video_with_audio.mp4' %}" type="video/mp4">
             </video>
         </div>
         <!-- Right Column -->
@@ -21,7 +21,7 @@
                     <p>วิดีโอมีการเบลอเนื้อหาดังต่อไปนี้</p>
                     <ul>
                         {% for phobia in selected_phobias %}
-                            <li>{{ phobia.name_TH }}({{ phobia.name_ENG }})</li>
+                            <li>{{ phobia }}</li>
                         {% endfor %}
                     </ul>
                 </div>
