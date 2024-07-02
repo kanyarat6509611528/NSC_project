@@ -227,7 +227,7 @@ def d_result(request):
 
 def d_information(request):
     current_step = 3
-    phobias = Phobias.objects.all()  
+    phobias = Phobias.objects.all().order_by('name_ENG')  
     context = {
         'current_step': current_step,
         'phobias': phobias
@@ -239,7 +239,7 @@ def d_information(request):
 def d_select(request):
     current_step = 4
     
-    phobias = Phobias.objects.all() 
+    phobias = Phobias.objects.all().order_by('name_ENG') 
     
     selected_phobias = []
 
@@ -253,7 +253,7 @@ def d_select(request):
             phobia = Phobias.objects.get(id=phobia_id)
             phobia.count += 1  # Increment count
             phobia.save()
-            selected_phobias.append(phobia.name)
+            selected_phobias.append(phobia.name_ENG)
 
         return redirect('d05_loading2') 
 
@@ -325,7 +325,7 @@ def d_finish(request):
     selected_phobia_ids = request.session.get('selected_phobias', [])
 
     # Query the database to get names based on IDs
-    selected_phobias = Phobias.objects.filter(id__in=selected_phobia_ids).values_list('name', flat=True)
+    selected_phobias = Phobias.objects.filter(id__in=selected_phobia_ids).values_list('name_ENG', flat=True)
 
     results_path = "app_detection/static/app_detection/results.json"
     
