@@ -31,19 +31,20 @@ from django.db.models.functions import Concat
 
 # -----------------------------------------------------------------------
 
-# Define paths
-media_directory = "app_detection/static/app_detection/media"
-allimages_directory = "app_detection/static/app_detection/allimages"
-imagepersec_directory = "app_detection/static/app_detection/imagePerSec"
-blurred_images_directory = "app_detection/static/app_detection/blurredImages"
-audio_directory = "app_detection/static/app_detection/audio"
-video_directory = "app_detection/static/app_detection/video"
-trained_model_path = "app_detection/static/app_detection/model/new_model10.h5"
+# Set paths
+media_dir = "app_detection/static/app_detection/media"
+video_dir = "app_detection/static/app_detection/video"
+frames_dir = "app_detection/static/app_detection/frames"
+audio_dir = "app_detection/static/app_detection/audio"
+trained_model_path = "app_detection/static/app_detection/model/new1_model10.h5"
 
 uploaded_video_path = "app_detection/static/app_detection/media/download_video.mp4"
+output_video_path = "app_detection/static/app_detection/video/output_video.mp4"
 
-# Create directories if they do not exist
-for directory in [media_directory, allimages_directory, imagepersec_directory, blurred_images_directory, audio_directory, video_directory]:
+# Load the trained model
+model = load_model(trained_model_path)
+
+for directory in [media_dir, video_dir, frames_dir, audio_dir]:
     os.makedirs(directory, exist_ok=True)
 
 # Load the trained model
@@ -77,6 +78,46 @@ def save_tiktok_data(url, output_dir, custom_video_name, browser='firefox'):
         
     else:
         raise FileNotFoundError("No video file found in the current directory.")
+    
+def extract_frames(uploaded_video_path, frames_dir):
+    # Create frames directory if it doesn't exist
+    if not os.path.exists(frames_dir):
+        os.makedirs(frames_dir)
+
+    # Open the video file
+    cap = cv2.VideoCapture(uploaded_video_path)
+
+    # Get frames per second (fps) of the video
+    fps = cap.get(cv2.CAP_PROP_FPS)
+
+    # Calculate exact frame interval to save 1 frame per second
+    frame_interval = int(round(fps))
+
+    frame_count = 0
+    saved_frame_count = 0
+
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        # Save every frame_interval-th frame (i.e., 1 frame per second)
+        if frame_count % frame_interval == 0:
+            frame_path = os.path.join(frames_dir, f'frame_{saved_frame_count:04d}.jpg')
+            cv2.imwrite(frame_path, frame)
+            saved_frame_count += 1
+            print(f"Extracted frame {saved_frame_count}")
+
+        frame_count += 1
+
+    cap.release()
+
+    # Count the number of frames in the directory
+    files = os.listdir(frames_dir)
+    frame_files = [file for file in files if file.startswith('frame_') and file.endswith('.jpg')]
+    num_frames = len(frame_files)
+
+    print(f"Number of frames in the directory: {num_frames}")
 
 # --------------------------------------------------------------------------- 
 
@@ -100,32 +141,11 @@ def d_import(request):
             new_file_path = os.path.join(output_dir, f'{custom_video_name}.mp4')
             with open(new_file_path, 'wb+') as destination:
                 for chunk in uploaded_file.chunks():
+         
                     destination.write(chunk)
-
-        # Extract frames from video
-        cap = cv2.VideoCapture(uploaded_video_path)
-        fps = cap.get(cv2.CAP_PROP_FPS)
-        frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-
-        frame_number = 0
-        while True:
-            ret, frame = cap.read()
-            if not ret:
-                break
-
-            frame_path = os.path.join(allimages_directory, f"frame_{frame_number:04d}.jpg")
-            cv2.imwrite(frame_path, frame)
-
-            if frame_number % int(fps) == 0:
-                frame_per_sec_path = os.path.join(imagepersec_directory, f"frame_{frame_number:04d}.jpg")
-                cv2.imwrite(frame_per_sec_path, frame)
-
-            frame_number += 1
-
-        cap.release()
-        print(f"Extracted {frame_number} frames to {allimages_directory}")
-        print(f"Extracted {frame_number // int(fps)} frames to {imagepersec_directory}")
-
+        
+        extract_frames(uploaded_video_path, frames_dir)
+        
         return redirect('d02_loading1')
 
     context = {
@@ -135,10 +155,79 @@ def d_import(request):
 
 # --------------------------------------------------------------------------- 
 
+def classify_frames(frames_dir):
+    # Initialize results list
+    results = []
+
+    # Fetch phobias from the database and prepare class names
+    phobias = Phobias.objects.all().order_by('name_ENG')
+    listTW = [f'{phobia.name_TH} ({phobia.name_ENG})' for phobia in phobias]
+    class_names = [(name, i + 1) for i, name in enumerate(listTW)] + [("อื่น ๆ (Others)", len(listTW) + 1)]
+
+    # Initialize class counts
+    class_counts = {name: 0 for name, _ in class_names}
+
+    # Initialize frame number
+    frame_number = 1
+
+    # Iterate over frames in frames_dir
+    for filename in sorted(os.listdir(frames_dir)):
+        if filename.endswith(".jpg") or filename.endswith(".png"):
+            file_path = os.path.join(frames_dir, filename)
+            img = image.load_img(file_path, target_size=(224, 224))
+            img_array = image.img_to_array(img)
+            img_array = np.expand_dims(img_array, axis=0)
+            img_array = tf.keras.applications.efficientnet_v2.preprocess_input(img_array)
+
+            # Use the loaded Keras model for prediction
+            prediction = model.predict(img_array)
+            predicted_class_index = np.argmax(prediction, axis=1)[0]
+            predicted_class_name = listTW[predicted_class_index]  # Access class name from list
+            predicted_prob = np.max(prediction, axis=1)[0] * 100
+
+            # Debugging prints
+            print(f"Processing frame {frame_number}: {filename}")
+            print(f"Predicted class: {predicted_class_name} with probability: {predicted_prob:.2f}%")
+
+            # If probability is low, classify as 'others'
+            if predicted_prob < 80:
+                predicted_class_name = "อื่น ๆ (Others)"
+                print(f"Frame classified as 'others' due to low confidence: {predicted_prob:.2f}%")
+
+            # Save result to results list
+            result = {
+                "frame_number": frame_number,
+                "predicted_class_name": predicted_class_name
+            }
+            results.append(result)
+
+            # Increment class count
+            class_counts[predicted_class_name] += 1
+
+            # Increment frame number
+            frame_number += 1
+    
+    results_path = "app_detection/static/app_detection/results.json"
+    with open(results_path, 'w') as f:
+        json.dump(results, f, indent=4)
+
+    # Calculate and return the percentage of each class
+    total_images = sum(class_counts.values())
+    class_distribution = []
+    for class_name, count in class_counts.items():
+        percentage = (count / total_images) * 100 if total_images > 0 else 0
+        class_distribution.append({"name": class_name, "percent": f"{percentage:.2f}"})
+
+    percentage_path = "app_detection/static/app_detection/percentage.json"
+    with open(percentage_path, 'w') as f:
+        json.dump(class_distribution, f, indent=4)
+
 def d_loading1(request):
     current_step = 2
     percent = [50, 60, 70, 85, 100] # รอแก้สิ่งนี้เป็นแบบส่งตัวแปรมา
-    
+
+    classify_frames(frames_dir)
+
     context = {
         'current_step': current_step,
         'percent': percent
@@ -149,81 +238,22 @@ def d_loading1(request):
 
 def d_result(request):
     
-    phobias = Phobias.objects.all().order_by('name_ENG')
-    listTW = [f'{phobia.name_TH} ({phobia.name_ENG})' for phobia in phobias]
-    class_names = [(name, i + 1) for i, name in enumerate(listTW)] + [("อื่น ๆ (Others)", len(listTW) + 1)]
-
-    # Initialize class counts
-    class_counts = {name: 0 for name, _ in class_names}
-
-    # Function to load and preprocess an image
-    def load_and_process_image(file_path):
-        img = image.load_img(file_path, target_size=(224, 224))
-        img_array = image.img_to_array(img)
-        img_array = np.expand_dims(img_array, axis=0)
-        img_array = tf.keras.applications.efficientnet_v2.preprocess_input(img_array)
-        return img_array
-
-    # Total number of images processed
-    total_images = 0
-
-    results = []
-
-    # Iterate through each file in the directory
-    for filename in sorted(os.listdir(allimages_directory)):
-        if filename.endswith(".jpg") or filename.endswith(".png"):
-            file_path = os.path.join(allimages_directory, filename)
-            
-            # Load and preprocess the image
-            img_array = load_and_process_image(file_path)
-
-            # Use the loaded Keras model for prediction
-            prediction = model.predict(img_array)
-            predicted_class_index = np.argmax(prediction, axis=1)[0]
-            predicted_class_name = listTW[predicted_class_index]
-            predicted_prob = np.max(prediction, axis=1)[0] * 100
-
-            # Debugging prints
-            print(f"Processing frame: {filename}")
-            print(f"Predicted class: {predicted_class_name} with probability: {predicted_prob:.2f}%")
-
-            # Perform blur or copy based on classification
-            if predicted_prob < 80:
-                predicted_class_name = "อื่น ๆ (Others)"
-                print(f"Frame classified as 'อื่น ๆ (Others)' due to low confidence: {predicted_prob:.2f}%")# Save the result
-            
-            results.append({
-                'filename': filename,
-                'predicted_class_name': predicted_class_name
-            })
-
-            # Increment the count for the predicted class
-            class_counts[predicted_class_name] += 1
-            total_images += 1
-
-    # Calculate and store the percentage of each class in the context
-    class_distribution = []
-    for class_name, count in class_counts.items():
-        percentage = (count / total_images) * 100 if total_images > 0 else 0
-        class_distribution.append({"name": class_name, "percent": f"{percentage:.2f}"})
+    # Load percentage 
+    percentage_path = "app_detection/static/app_detection/percentage.json"
+    with open(percentage_path, 'r') as f:
+        class_distribution = json.load(f)
 
     context = {
         'current_step': 3,
-        'phobias': class_distribution,
+        'phobias': class_distribution
     }
 
-    # Find the maximum phobia
-    max_phobia = max(context['phobias'], key=lambda x: x['percent'])
-    context['max_name'] = max_phobia['name']
-    context['max_percent'] = max_phobia['percent']
+    # Find the maximum phobia based on percentage
+    if class_distribution:
+        max_phobia = max(class_distribution, key=lambda x: float(x['percent']))
+        context['max_name'] = max_phobia['name']
+        context['max_percent'] = max_phobia['percent']
 
-    results_path = "app_detection/static/app_detection/results.json"
-
-    os.makedirs(os.path.dirname(results_path), exist_ok=True)
-
-    with open(results_path, "w") as json_file:
-        json.dump(results, json_file, indent=4)
-    
     return render(request, 'app_detection/d03_result.html', context)
 
 # --------------------------------------------------------------------------- 
@@ -269,60 +299,81 @@ def d_select(request):
 
 # --------------------------------------------------------------------------- 
 
+def blur_video(uploaded_video_path, output_video_path, segment_times):
+    import cv2
+
+    cap = cv2.VideoCapture(uploaded_video_path)
+    if not cap.isOpened():
+        print("Error opening video file.")
+        return
+
+    frame_rate = int(cap.get(cv2.CAP_PROP_FPS))
+    frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+    segment_frames = [(int(start * frame_rate), int(end * frame_rate)) for start, end in segment_times]
+
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter(output_video_path, fourcc, frame_rate, (frame_width, frame_height))
+
+    frame_count = 0
+    current_segment = 0
+
+    print("Starting video blurring...")
+
+    while cap.isOpened() and current_segment < len(segment_frames):
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        if segment_frames[current_segment][0] <= frame_count < segment_frames[current_segment][1]:
+            blurred_frame = cv2.GaussianBlur(frame, (51, 51), 0)
+            out.write(blurred_frame)
+        else:
+            out.write(frame)
+
+        frame_count += 1
+
+        if frame_count >= segment_frames[current_segment][1]:
+            current_segment += 1
+
+    while frame_count < total_frames:
+        ret, frame = cap.read()
+        if not ret:
+            break
+        out.write(frame)
+        frame_count += 1
+
+    cap.release()
+    out.release()
+    cv2.destroyAllWindows()
+
+    print("Video blurring completed.")
+
+def get_segment_times(frame_numbers):
+    segment_times = [(frame_num - 1, frame_num) for frame_num in frame_numbers]
+    return segment_times
+
+def merge_video_audio(uploaded_video_path, audio_path, output_video_path):
+    video_clip = VideoFileClip(uploaded_video_path)
+    audio_clip = AudioFileClip(audio_path)
+    video_clip = video_clip.set_audio(audio_clip)
+    video_clip.write_videofile(output_video_path, codec='libx264', audio_codec='aac')
+    video_clip.close()
+    audio_clip.close()
+    print(f"Video merged with audio and saved to '{output_video_path}'")
+
 def d_loading2(request):
     current_step = 5
-
     percent = [50, 60, 70, 85, 100] # รอแก้สิ่งนี้เป็นแบบส่งตัวแปรมา
-    
-    context = {
-        'current_step': current_step,
-        'percent': percent
-    }
-    return render(request, 'app_detection/d05_loading2.html', context)
 
-# ---------------------------------------------------------------------------
-
-def extract_audio_and_create_video(uploaded_video_path):
     # Extract audio from the original video
-    audio_path = os.path.join(audio_directory, "original_audio.mp3")
+    audio_path = os.path.join(audio_dir, "original_audio.mp3")
     video_clip = VideoFileClip(uploaded_video_path)
     audio_clip = video_clip.audio
     audio_clip.write_audiofile(audio_path)
     audio_clip.close()
-
-    # Generate video from processed frames
-    def generate_video():
-        images = [img for img in os.listdir(blurred_images_directory) if img.endswith((".jpg", ".jpeg", ".png"))]
-        images.sort()  # Ensure the images are sorted by filename
-
-        if images:
-            first_frame_path = os.path.join(blurred_images_directory, images[0])
-            first_frame = cv2.imread(first_frame_path)
-            height, width = first_frame.shape[:2]
-
-            clips = []
-            for image in images:
-                blurred_frame_path = os.path.join(blurred_images_directory, image)
-                frame = cv2.imread(blurred_frame_path)
-
-                if frame.shape[:2] != (height, width):
-                    frame = cv2.resize(frame, (width, height))
-
-                clips.append(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-
-            fps = video_clip.fps
-            final_video = ImageSequenceClip(clips, fps=fps)
-            final_audio = AudioFileClip(audio_path)
-            final_video = final_video.set_audio(final_audio)
-            final_video.write_videofile(os.path.join(video_directory, "blurred_video_with_audio.mp4"), fps=fps)
-            print(f"Created blurred video with audio: {os.path.join(video_directory, 'blurred_video_with_audio.mp4')}")
-        else:
-            print("No frames found to create video.")
-
-    generate_video()
-
-def d_finish(request):
-    current_step = 6
 
     # Retrieve selected phobia IDs from session
     selected_phobia_ids = request.session.get('selected_phobias', [])
@@ -332,45 +383,42 @@ def d_finish(request):
         combined_name=Concat('name_TH', Value(' ('), 'name_ENG', Value(')'))
     ).values_list('combined_name', flat=True)
 
+    # Load classified results
     results_path = "app_detection/static/app_detection/results.json"
+    with open(results_path, 'r') as f:
+        results = json.load(f)
     
-    with open(results_path, "r") as json_file:
-        results = json.load(json_file)
+    # Filter frames for blur based on predicted_class_name
+    frames_to_blur = [result['frame_number'] for result in results if result['predicted_class_name'] in selected_phobias]
+    print(frames_to_blur)
 
-    # Get list of filenames from allimages_directory
-    allimages_directory = "app_detection/static/app_detection/allimages"
-    filenames = [filename for filename in os.listdir(allimages_directory) if filename.endswith((".jpg", ".png"))]
+    segment_times = get_segment_times(frames_to_blur)
 
-    for filename in filenames:
-        result = None
-        for res in results:
-            if res['filename'] == filename:
-                result = res
-                break
-        
-        if result:
-            predicted_class_name = result['predicted_class_name']
-            
-            if predicted_class_name in selected_phobias:
-                print(f"Blurring frame: {predicted_class_name}")
-                file_path = os.path.join(allimages_directory, filename)
-                img = cv2.imread(file_path)
-                if img is not None:
-                    blurred_img = cv2.GaussianBlur(img, (51, 51), 0)  # Large kernel size for significant blurring
-                    blurred_file_path = os.path.join(blurred_images_directory, filename)
-                    cv2.imwrite(blurred_file_path, blurred_img)
-                    print(f"Blurred image saved: {blurred_file_path}")
-                else:
-                    print(f"Error loading image: {filename}")
-            else:
-                print(f"Copying original frame for 'others' class: {predicted_class_name}")
-                shutil.copy(os.path.join(allimages_directory, filename), os.path.join(blurred_images_directory, filename))
-        else:
-            print(f"No result found for filename: {filename}")
+    # Blur video based on segment times
+    blur_video(uploaded_video_path, output_video_path, segment_times)
 
-    print("Blurring process completed.")
+    # Merge the blurred video with the extracted audio
+    final_video_path = os.path.join(video_dir, 'final_video_with_audio.mp4')
+    merge_video_audio(output_video_path, audio_path, final_video_path)
 
-    extract_audio_and_create_video(uploaded_video_path)
+    context = {
+        'current_step': current_step,
+        'percent': percent
+    }
+    return render(request, 'app_detection/d05_loading2.html', context)
+
+# ---------------------------------------------------------------------------
+
+def d_finish(request):
+    current_step = 6
+    
+    # Retrieve selected phobia IDs from session
+    selected_phobia_ids = request.session.get('selected_phobias', [])
+
+    # Query the database to get names based on IDs
+    selected_phobias = Phobias.objects.filter(id__in=selected_phobia_ids).annotate(
+        combined_name=Concat('name_TH', Value(' ('), 'name_ENG', Value(')'))
+    ).values_list('combined_name', flat=True)
 
     context = {
         'current_step': current_step,
