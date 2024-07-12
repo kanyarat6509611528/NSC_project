@@ -48,6 +48,19 @@
         background-color: #3344a7;
     }
 
+    .sub-button {
+        border-radius: 20px;
+        padding: 5px 20px;
+        border: none;
+        background-color: rgb(42, 42, 72); 
+        color: white;
+        cursor: pointer;
+    }
+
+    .sub-button:hover {
+        background-color: rgb(31, 31, 53);
+    }
+
 /*--------------------------------------------------*/
 
 /* CHECKBOX */
@@ -228,8 +241,6 @@
         color: #fff;
         border-color: #f44040;
     }
-
-
 
 /*--------------------------------------------------*/
 
