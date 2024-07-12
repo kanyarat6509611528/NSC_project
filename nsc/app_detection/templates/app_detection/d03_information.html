@@ -1,0 +1,69 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block content %}
+
+{% include 'app_detection/components/statusBar.html' %}
+    <div class="home-style">
+        <h1 class="text-topic">รายละเอียดเนื้อหาในวิดีโอ</h1>
+
+        <div class="button-container">
+            <a href="{% url 'd03_result' %}">
+                <button class="button-next" type="button">ผลลัพธ์การประมวลผล</button>
+            </a>
+        </div>
+    </div>
+    {% for phobia in phobias %}
+        <div class="gallery-content">
+            <button type="button" class="collapsible">{{phobia}}</button>
+            <div class="g-content">
+                <div class="gallery">
+                    {% for prediction in results %}
+                        {% if phobia == prediction.predicted_class_name %}
+                            {% for image in image_list %}
+                                {% if forloop.counter0 == prediction.frame_number  %}
+                                    <div class="gallery-item">
+                                        <img src="{% static image %}" class="blur-image">
+                                        <div class="gallery-text">นาทีที่ {{ prediction.frame_time }}</div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+<style>
+    .home-style {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15%;
+}
+.blur-image {
+    filter: blur(10px);
+    clip-path: inset(1px);
+}
+</style>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var coll = document.querySelectorAll(".collapsible");
+  
+      coll.forEach(function(item) {
+        item.addEventListener("click", function() {
+          this.classList.toggle("active");
+          var content = this.nextElementSibling;
+          if (content.style.display === "block") {
+            content.style.display = "none";
+          } else {
+            content.style.display = "block";
+          }
+        });
+      });
+    });
+
+</script>
+
+{% endblock %}
