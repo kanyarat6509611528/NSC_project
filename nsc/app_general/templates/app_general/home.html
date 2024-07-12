@@ -1,0 +1,272 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="frame-big col-md-8 justify-content-end" style="padding: 0;">
+        <class="slideshow-container">
+            <!-- PAGE 1 -->
+            <div class="mySlides">
+                <div class="home-style">
+                    <h1>โฟเบีย</h1>
+                    <h3>มีจริงหรือกลัวไปเอง?</h3>
+                    <div class="line-page"></div>
+                    <p>สถาบันสุขภาพแห่งชาติ (NIH) หน่วยงานวิจัยด้านการแพทย์ของสหรัฐอเมริกา เผยผลสำรวจพบว่า ประมาณ 12.5% ของบุคคลอายุ 18 ปีขึ้นไปในสหรัฐอเมริกา เคยเผชิญกับ "โรคกลัวเฉพาะอย่าง (Specific Phobia)"</p>
+                    <a href="{% url 'about' %}">คลิกที่นี่ เพื่อเรียนรู้เพิ่มเติมเกี่ยวกับโฟเบีย</a>
+                    <div class="line-page"></div>
+                    <a href="{% url 'self_test' %}">
+                        <button class="button-back" type="button">ทำแบบประเมินเบื้องต้น</button>
+                    </a>
+                    <a href="{% url 'd01_import' %}" style="margin-left: 5%;">
+                        <button class="button-next" type="button">เริ่มต้นใช้งาน</button>
+                    </a>
+                </div>
+            </div>
+
+            <!-- PAGE 2 -->
+            <div class="mySlides">
+                <div class="home-style">
+                    <h1>สมัครสมาชิก</h1>
+                    <h4>เพื่อรับประสบการณ์ที่ดียิ่งขึ้น</h4>
+                    <div class="line-page"></div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <td></td>
+                                <td>ผู้ใช้ทั่วไป</td>
+                                <td>สมาชิก</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>แนบไฟล์หรือลิงก์วิดีโอจาก TikTok</td>
+                                <td><span class="symbol true">✔</span></td>
+                                <td><span class="symbol true">✔</span></td>
+                            </tr>
+                            <tr>
+                                <td>แสดงสัดส่วนเนื้อหาที่พบในวิดีโอ</td>
+                                <td><span class="symbol true">✔</span></td>
+                                <td><span class="symbol true">✔</span></td>
+                            </tr>
+                            <tr>
+                                <td>แสดงรายละเอียดของสัดส่วนเนื้อหา</td>
+                                <td><span class="symbol true">✔</span></td>
+                                <td><span class="symbol true">✔</span></td>
+                            </tr>
+                            <tr>
+                                <td>เก็บข้อมูลโฟเบียของผู้ใช้</td>
+                                <td><span class="symbol false">✘</span></td>
+                                <td><span class="symbol true">✔</span></td>
+                            </tr>
+                            <tr>
+                                <td>เบลอเนื้อหาที่ไม่ต้องการรับชมในวิดีโอ</td>
+                                <td><span class="symbol false">✘</span></td>
+                                <td><span class="symbol true">✔</span></td>
+                                
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="line-page"></div>
+                 
+                </div>
+            </div>
+
+            <div class="a-dot">
+                <span class="dot" onclick="currentSlide(1)"></span>
+                <span class="dot" onclick="currentSlide(2)"></span>
+            </div>
+
+            <a class="prev" onclick="plusSlides(-1)" style="left: 0; transform: translateX(-50%);">&#10094;</a>
+            <a class="next" onclick="plusSlides(1)" style="right: 0; transform: translateX(50%);">&#10095;</a>
+        </div>
+    </div>
+</div>
+
+<style>
+table {
+    width: 50%;
+    margin: 20px auto;
+    border-collapse: collapse;
+}
+th, td {
+    border: 1px solid transparent;
+    padding: 8px;
+    text-align: center;
+}
+th {
+    background-color: #f2f2f2;
+}
+
+.home-profile h2 {
+    margin-top: 5%;
+    color: #c6a44e;
+    font-weight: 300;
+}
+.content-profile {
+    margin-top: 5%;
+    font-size: 1.5em;
+    color: #ffffff;
+    font-weight: 200;
+    transition: color 0.3s;
+    text-decoration: none;
+    background-color: transparent;
+    padding: auto;
+    border: none;
+}
+.content-profile:hover {
+    color: #cac0a2;
+    text-decoration: none;
+}
+.button-back{
+    color:#ffffff;
+    font-size: 1em;
+    font-weight: 500;
+    padding: 10 20px;
+}
+
+  .home-style {
+    text-align: center;
+  }
+  .home-style h1 {
+    margin-top: 5%;
+    font-size: 4em;
+    font-weight: 400;
+    background: linear-gradient(to bottom, #ffffff, #999999);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+  .home-style h3 {
+    font-size: 3em;
+    font-weight: 350;
+  }
+  .home-style h4 {
+    font-size: 2em;
+    font-weight: 350;
+  }
+  .home-style p {
+    width: 80%;
+    margin: auto;
+  }
+  .frame-big {
+      color: #ffffff;
+      height: 580px;
+  }
+  .frame-big p {
+      text-align: left;
+      padding-left: 10%;
+      font-size: 1em;
+      color: #ffffff;
+  }
+  .frame-small {
+      width: 90%;
+  }
+  .frame-small p {
+      text-align: left;
+      padding-left: 5%;
+      font-size: 1em;
+      color: #ffffff;
+  }
+  .frame-small hr {
+      margin: 20px auto;
+      border: none;
+      border-top: 1px solid #ccc;
+      width: 90%; /* กำหนดความยาวของเส้น */
+  }
+  .button-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 5%;
+  }
+  .form-field {
+      display: flex;
+      margin-bottom: 15px;
+      text-align: center;
+  }
+  .form-field label {
+    color: white;
+    margin-right: 1px;
+    flex: 1;
+}
+.form-field input {
+    flex: 2;
+    padding: 5px;
+    border-radius: 5px;
+    margin-right: 15%;
+    border: 1px solid #ccc;
+}
+.prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 45%;
+    color: rgba(255, 255, 255, 0.3);
+    font-weight: bold;
+    font-size: 50px;
+    text-align: center;
+    border: none;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.prev:hover, .next:hover {
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
+}
+.a-dot {
+    position: absolute;
+    bottom: 5%;
+    width: 100%;
+    text-align: center;
+}
+    .dot {
+        height: 15px;
+        width: 15px;
+        margin: 0 2px;
+        background-color: #717171;
+        border-radius: 50%;
+        display: inline-block;
+        transition: background-color 0.3s ease;
+    }
+
+    .active {
+        background-color: #9a9a9a;
+    }
+    
+</style>
+
+<script>
+    var slideIndex = 1;
+    showSlides(slideIndex);
+
+    function plusSlides(n) {
+        showSlides(slideIndex += n);
+    }
+
+    function currentSlide(n) {
+        showSlides(slideIndex = n);
+    }
+
+    function showSlides(n) {
+        var i;
+        var slides = document.getElementsByClassName("mySlides");
+        var dots = document.getElementsByClassName("dot");
+
+        if (n > slides.length) { slideIndex = 1 }
+        if (n < 1) { slideIndex = slides.length }
+
+        for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+        }
+
+        for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(" active", "");
+        }
+
+        slides[slideIndex - 1].style.display = "block";
+        dots[slideIndex - 1].className += " active";
+    }
+</script>
+
+{% endblock %}

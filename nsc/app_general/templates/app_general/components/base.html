@@ -1,0 +1,160 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APps</title>
+    <link rel="icon" href="{% static 'app_general/logo_icon.png'%}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/css.gg@2.0.0/icons/css/profile.css' rel='stylesheet'>
+    <link rel="stylesheet" href="{% static 'app_general/style.css' %}">
+</head>
+
+<body>
+    <header>
+        <div class="logo-header">
+            <img src="{% static 'app_general/logo_icon.png' %}" style="width: 6%;">
+            <div class="logo-text">
+                <h5>AI PICK</h5>
+                <h5>Phobia System</h5>
+            </div>
+        </div>
+
+        <div class="header-frame">
+            <a href="{% url 'home' %}">หน้าหลัก</a>
+            <a href="{% url 'd01_import' %}">ตรวจสอบวิดีโอ</a>
+            <a href="{% url 'stat' %}">ข้อมูลสถิติ</a>
+            <a href="{% url 'about' %}">รู้จักโฟเบีย</a>
+        </div>
+        <div class="login-header">
+            {% if user.is_authenticated %}
+                <a href="{% url 'user_select' %}" style="display: inline-flex; gap: 5px;">
+                    <i class="gg-profile"></i> {{ user.username }}
+                </a>
+                <a>
+                    <form action="{% url 'logout' %}" method="POST" class="ml-2">
+                        {% csrf_token %}
+                        <button type="submit" class="rounded-button">ออกจากระบบ</button>
+                    </form>
+                </a>
+            {% else %}
+                <a href="{% url 'login' %}">เข้าสู่ระบบ</a>
+                <a href="{% url 'register' %}">
+                    <button class="rounded-button" type="button">สมัครสมาชิก</button>
+                </a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="site-content">
+        {% block content %}{% endblock %}
+    </div>
+
+</body>
+
+<style>
+    body {
+        background-image: url("{% static 'app_general/background.png' %}");
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+        margin: 0;
+        align-items: center;
+        height: 100vh;
+        position: relative;
+        font-family: 'Kanit', sans-serif;
+    }
+    .site-content {
+        margin-top: 7%;
+    }
+    .logo-header {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        display: flex;
+        align-items: center;
+        opacity: 0.8;
+    }
+    .logo-header img {
+        width: 70%;
+        margin-right: 10px;
+    }
+    .logo-text {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+        color: #ffffff;
+        opacity: 0.8;
+    }
+    .logo-text h5 {
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .header-frame {
+        width: 50%;
+        padding: 15px 50px;
+        background-color: rgba(29, 31, 32, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 20px auto;
+        display: flex;
+        justify-content: space-between;
+        text-align: center;
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000; /* Ensure it's above other content */
+    }
+
+    .header-frame a {
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+    .header-frame a:hover {
+        color: #c6a44e;
+        text-decoration: none;
+    }
+
+    .login-header {
+        position: fixed;
+        top: 25px;
+        right: 30px;
+        width: auto;
+        padding: 10px;
+        background-color: rgba(29, 31, 32, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #ffffff;
+        z-index: 1000;
+        flex-wrap: nowrap;
+    }
+
+    .login-header a {
+        color: #ffffff;
+        text-decoration: none;
+        margin: 0 10px;
+    }
+
+    .login-header a:hover {
+        color: #c6a44e;
+        text-decoration: none;
+    }
+</style>

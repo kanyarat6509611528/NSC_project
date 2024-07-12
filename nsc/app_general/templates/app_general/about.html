@@ -1,0 +1,113 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="about-style">
+        <h1 class="text-topic">รู้จักโฟเบีย</h1>
+
+        <div class="frame-small" style="margin-bottom: 2%;">
+            <p class="text-head">โรคกลัว(Phobia) คืออะไร?</p>
+            <hr>
+            <ul class="text-context">
+                <li>โรคกลัว (Phobia) หรือ ภาวะโฟเบีย เป็นความผิดปกติทางจิตประเภทหนึ่งที่ผู้ป่วยจะมีความกลัว      
+                    ขั้นรุนแรงต่อสิ่งของ สถานการณ์ หรือเหตุการณ์บางอย่าง จนส่งผลกระทบต่อการใช้ชีวิตประจำวัน </li><br>
+                <li>อาการของโรคกลัวอาจมีลักษณะบางอย่างที่คล้ายกับอาการของโรคแพนิก เช่น ใจสั่น ใจเต้นแรง หายใจเร็ว มือเท้าเย็น    
+                    ท้องไส้ปั่นป่วน เวียนหัวตาลาย เป็นต้น</li><br>
+                <li>ในทางทฤษฎีการแพทย์ สาเหตุของโรค
+                    กลัวยังไม่ได้รับการระบุอย่างชัดเจน แต่สันนิษฐานว่าอาจเกิดจากปัจจัยหลายอย่างร่วมกัน เช่น ประสบการณ์ใน
+                    อดีต การกระทบกระเทือนทางจิตใจ พันธุกรรม ความผิดปกติของสมองและระบบประสาทอัตโนมัติ</li>
+            </ul>
+        </div>
+        <div class="frame-small">
+            <p class="text-head">โรคกลัวเฉพาะอย่าง(Specific Phobia) </p>
+            <hr>
+            <ul class="text-context">
+                <p>โรคกลัวเฉพาะอย่าง (Specific Phobia) เป็นประเภทของโรคกลัวที่พบได้บ่อยในชีวิตประจำวัน เช่น</p>
+                <div class="ex-content">
+                    {% for phobia in phobias %}
+                        <li>
+                            {{ phobia.name_TH }} ({{ phobia.name_ENG }})
+                            <button onclick="toggleImage(this)" class="ex-button">&#40;ดูรูปภาพ&#41;</button>
+                                <div class="image-container hidden">
+                                    <img src="{{ phobia.image1 }}">
+                                    <img src="{{ phobia.image2 }}">
+                                </div>
+                        </li>
+                        <br>
+                    {% endfor %}
+                </div>
+            </ul>
+        
+            <script>
+                function toggleImage(button) {
+                    const imageContainer = button.nextElementSibling;
+                    if (imageContainer.classList.contains('hidden')) {
+                        imageContainer.classList.remove('hidden');
+                        button.textContent = '(ซ่อน)';
+                    } else {
+                        imageContainer.classList.add('hidden');
+                        button.textContent = '(ดูรูปภาพ)';
+                    }
+                }
+            </script>
+
+<style>
+    .ex-content{
+        text-align: left;
+        padding-left: 5%;
+    }
+    .ex-button {
+        margin-left: 10px;
+        background-color: transparent;
+        color: #c6a44e;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+    }
+
+    .ex-button:hover {
+        text-decoration: underline;
+    }
+    .hidden {
+        display: none;
+    }
+    .image-container img {
+        width: 200px;
+        height: auto;
+    }
+    .about-style {
+        text-align: center;
+        color: white;
+    }
+    .frame-small {
+        width: 70%;
+    }
+    .text-head {
+        text-align: left;
+        padding-left: 5%;
+        font-size: 1.5em;
+        color: #ffffff;
+    }
+    .text-context {
+        text-align: left;
+        width: 90%;
+        margin: auto;
+        font-size: 1em;
+        color: #ffffff;
+    }
+    .frame-small hr {
+        margin: 20px auto;
+        border: none;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+    }
+    .button-go {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 50px;
+        color:black;
+    }   
+</style>
+    
+    
+{% endblock %}
