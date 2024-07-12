@@ -45,7 +45,7 @@
     }
 
     .rounded-button:hover {
-        background-color: #3344a7;
+        background-color:  #1f2b6d;
     }
 
     .sub-button {
@@ -59,6 +59,19 @@
 
     .sub-button:hover {
         background-color: rgb(31, 31, 53);
+    }
+
+    .red-button {
+        border-radius: 20px;
+        padding: 5px 20px;
+        border: none;
+        background-color: rgb(129, 34, 34); 
+        color: white;
+        cursor: pointer;
+    }
+
+    .red-button:hover {
+        background-color: rgb(104, 28, 28);
     }
 
 /*--------------------------------------------------*/
