@@ -1,0 +1,26 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+requests = "*"
+django = "*"
+mysql-connector-python = "*"
+pyktok = "*"
+beautifulsoup4 = "*"
+browser-cookie3 = "*"
+numpy = "*"
+pandas = "*"
+selenium = "*"
+streamlit = "*"
+mysqlclient = "*"
+python-dotenv = "*"
+opencv-python = "*"
+ffmpeg-python = "*"
+
+[dev-packages]
+bpython = "*"
+
+[requires]
+python_version = "3.11"

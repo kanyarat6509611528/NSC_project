@@ -1,0 +1,73 @@
+{% extends 'app_users/components/profile_base.html' %}
+{% load static %}
+{% block content-profile %}
+<div class="row" style="display: flex; justify-content: center;">
+
+    <!-- Left Column -->
+    <div class="frame-small col-md-6" style="margin-right: 20px; padding: 15px; border-radius: 8px;">
+        <h4 style="color: #ffffff; margin-top: 5%;">โฟเบียที่คุณเลือกไว้</h4>
+        <div class="line-page"></div>
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset style="text-align: left; margin-left: 15%;">
+                {% for user_phobia in user_phobias %}
+                    <div style="margin-bottom: 5px;">
+                        <input type="checkbox" name="phobia_ids_to_delete" value="{{ user_phobia.id }}">
+                        <label style="margin-left: 5px;">{{ user_phobia.pb.name_TH }} ({{ user_phobia.pb.name_ENG }})</label>
+                    </div>
+                {% empty %}
+                    <p>ไม่มีข้อมูล</p>
+                {% endfor %}
+            </fieldset>
+            <button type="submit" name="delete" class="delete-button">ลบโฟเบียที่เลือก</button>
+        </form>
+    </div>
+
+    <!-- Right Column -->
+    <div class="frame-small col-md-4" style="padding: 15px; border-radius: 8px; background-color: #111010;">
+        <h4 style="color: #ffffff; margin-top: 5%;">เลือกโฟเบียอื่น ๆ</h4>
+        <div class="line-page"></div>
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset style="text-align: left; margin-left: 15%;">
+                {% for phobia in phobias %}
+                    <div style="margin-bottom: 5px;">
+                        <input type="checkbox" name="phobias" value="{{ phobia.id }}">
+                        <label style="margin-left: 5px;">{{ phobia.name_TH }} ({{ phobia.name_ENG }})</label>
+                    </div>
+                {% endfor %}
+            </fieldset>
+            <button type="submit" name="save" class="save-button">บันทึก</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    button.delete-button {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    button.delete-button:hover {
+        background-color: #c82333;
+    }
+
+    button.save-button {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    button.save-button:hover {
+        background-color: #218838; /* สีใหม่เมื่อวางเมาส์ */
+    }
+</style>
+
+{% endblock %}
