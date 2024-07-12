@@ -18,24 +18,25 @@
                     {% for phobia in phobias %}
                         <div class="checkbox-wrapper">
                             <div>
-                                <label class="switch" for="checkbox{{ phobia.id }}">
-                                    <input type="checkbox" id="checkbox{{ phobia.id }}" name="phobias" value="{{ phobia.id }}"/>
+                                <label class="switch">
+                                    <input type="checkbox" id="checkbox{{ phobia }}" name="phobias" value="{{ phobia }}" />
                                     <div class="slider round"></div>
                                 </label>
-                                <p>{{phobia}}</p>
+                                <p>{{ phobia }}</p>
                             </div>
                         </div>
                     {% endfor %}
                 </div>
-            </form>
         </div>
-        <div class="button-container">
-            <a href="{% url 'd03_result' %}">
-                <button class="button-back" type="button">ย้อนกลับ</button>
-            </a>
-            
-            <button class="button-next" type="submit">ดำเนินการต่อ</button>
-        </div>      
+                <div class="button-container">
+                    <a href="{% url 'd03_result' %}">
+                        <button class="button-back" type="button">ย้อนกลับ</button>
+                    </a>
+                    
+                    <button class="button-next" type="submit">ดำเนินการต่อ</button>
+                </div>
+                
+            </form>
     </div>
 
     <style>
@@ -89,17 +90,4 @@
     }
     </style>
 
-    <script>
-        document.getElementById('phobia-form').addEventListener('submit', function(event) {
-            var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(function(checkbox) {
-                if (checkbox.checked) {
-                    checkbox.value = checkbox.getAttribute('value'); // Set value to phobia ID
-                } else {
-                    checkbox.value = '0'; // Unchecked value
-                }
-            });
-        });
-    </script>
-    
 {% endblock %}

@@ -29,7 +29,6 @@ from moviepy.editor import VideoFileClip, AudioFileClip, ImageSequenceClip
 import json
 
 from django.db.models import Value
-from django.db.models.functions import Concat
 
 # -----------------------------------------------------------------------
 
@@ -38,7 +37,7 @@ media_dir = "app_detection/static/app_detection/media"
 video_dir = "app_detection/static/app_detection/video"
 frames_dir = "app_detection/static/app_detection/frames"
 audio_dir = "app_detection/static/app_detection/audio"
-trained_model_path = "app_detection/static/app_detection/model/new1_model10.h5"
+trained_model_path = "app_detection/static/app_detection/model/nocb_10classmodel.h5"
 
 uploaded_video_path = "app_detection/static/app_detection/media/download_video.mp4"
 output_video_path = "app_detection/static/app_detection/video/output_video.mp4"
@@ -329,30 +328,29 @@ def d_select(request):
         if any(result['predicted_class_name'] == phobia for result in results):
             filtered_phobias.append(phobia)
 
-    current_step = 4
-    
-    phobias = Phobias.objects.all().order_by('name_ENG') 
-    
+    current_step = 4 
+
     selected_phobias = []
 
     if request.method == 'POST':
-        # Handle form submission
-        phobia_ids = request.POST.getlist('phobias')
-
-        request.session['selected_phobias'] = phobia_ids
-
-        for phobia_id in phobia_ids:
-            phobia = Phobias.objects.get(id=phobia_id)
-            phobia.count += 1  # Increment count
+        selected_phobias = request.POST.getlist('phobias')  # Get list of selected phobia names
+        
+        for phobia_name in selected_phobias:
+            # Split the name to separate Thai and English names
+            phobia_eng = phobia_name.split('(')[-1].strip(')').strip()
+            
+            phobia = Phobias.objects.get(name_ENG=phobia_eng)
+            phobia.count += 1
             phobia.save()
-            selected_phobias.append(phobia.name_ENG)
 
-        return redirect('d05_loading2') 
+        request.session['selected_phobias'] = selected_phobias
+        
+        return redirect('d05_loading2')
 
     context = {
         'current_step': current_step,
         'phobias': filtered_phobias,
-
+        'selected_phobias': selected_phobias
     }
 
     return render(request, 'app_detection/d04_select.html', context)
@@ -382,13 +380,22 @@ def blur_video(uploaded_video_path, output_video_path, segment_times):
 
     print("Starting video blurring...")
 
+    # Read the first frame
+    ret, frame = cap.read()
+
+    if ret:
+        # Perform Gaussian blur on the first frame
+        blurred_frame = cv2.GaussianBlur(frame, (101, 101), 0)
+        out.write(blurred_frame)  # Write the blurred frame to output video
+        print("Blurred the first frame.")
+
     while cap.isOpened() and current_segment < len(segment_frames):
         ret, frame = cap.read()
         if not ret:
             break
 
         if segment_frames[current_segment][0] <= frame_count < segment_frames[current_segment][1]:
-            blurred_frame = cv2.GaussianBlur(frame, (51, 51), 0)
+            blurred_frame = cv2.GaussianBlur(frame, (101, 101), 0)
             out.write(blurred_frame)
         else:
             out.write(frame)
@@ -404,6 +411,8 @@ def blur_video(uploaded_video_path, output_video_path, segment_times):
             break
         out.write(frame)
         frame_count += 1
+
+    # Create blurred thumbnail
 
     cap.release()
     out.release()
@@ -437,12 +446,7 @@ def d_loading2(request):
     audio_clip.close()
 
     # Retrieve selected phobia IDs from session
-    selected_phobia_ids = request.session.get('selected_phobias', [])
-
-    # Query the database to get names based on IDs
-    selected_phobias = Phobias.objects.filter(id__in=selected_phobia_ids).annotate(
-        combined_name=Concat('name_TH', Value(' ('), 'name_ENG', Value(')'))
-    ).values_list('combined_name', flat=True)
+    selected_phobias = request.session.get('selected_phobias', [])
 
     # Load classified results
     results_path = "app_detection/static/app_detection/results.json"
@@ -464,7 +468,8 @@ def d_loading2(request):
 
     context = {
         'current_step': current_step,
-        'percent': percent
+        'percent': percent,
+        'selected_phobias': selected_phobias,
     }
     return render(request, 'app_detection/d05_loading2.html', context)
 
@@ -475,12 +480,7 @@ def d_finish(request):
     current_step = 6
     
     # Retrieve selected phobia IDs from session
-    selected_phobia_ids = request.session.get('selected_phobias', [])
-
-    # Query the database to get names based on IDs
-    selected_phobias = Phobias.objects.filter(id__in=selected_phobia_ids).annotate(
-        combined_name=Concat('name_TH', Value(' ('), 'name_ENG', Value(')'))
-    ).values_list('combined_name', flat=True)
+    selected_phobias = request.session.get('selected_phobias', [])
 
     context = {
         'current_step': current_step,
