@@ -1,0 +1,14 @@
+Django
+requests
+mysql-connector-python
+pyktok
+beautifulsoup4
+browser-cookie3
+numpy
+pandas
+selenium
+streamlit
+mysqlclient
+python-dotenv
+opencv-python
+TikTokApi

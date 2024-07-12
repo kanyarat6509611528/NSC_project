@@ -37,7 +37,7 @@ media_dir = "app_detection/static/app_detection/media"
 video_dir = "app_detection/static/app_detection/video"
 frames_dir = "app_detection/static/app_detection/frames"
 audio_dir = "app_detection/static/app_detection/audio"
-trained_model_path = "app_detection/static/app_detection/model/nocb_10classmodel.h5"
+trained_model_path = "app_detection/static/app_detection/model/10class_model.h5"
 
 uploaded_video_path = "app_detection/static/app_detection/media/download_video.mp4"
 output_video_path = "app_detection/static/app_detection/video/output_video.mp4"
