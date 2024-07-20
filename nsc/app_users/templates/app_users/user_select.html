@@ -13,7 +13,7 @@
                 {% for user_phobia in user_phobias %}
                     <div style="margin-bottom: 5px;">
                         <input type="checkbox" name="phobia_ids_to_delete" value="{{ user_phobia.id }}">
-                        <label style="margin-left: 5px;">{{ user_phobia.pb.name_TH }} ({{ user_phobia.pb.name_ENG }})</label>
+                        <label style="margin-left: 5px;">{{ user_phobia.phobia.name_TH }} ({{ user_phobia.phobia.name_ENG }})</label>
                     </div>
                 {% empty %}
                     <p>ไม่มีข้อมูล</p>

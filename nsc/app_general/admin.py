@@ -18,7 +18,7 @@ class PhobiasAdmin(admin.ModelAdmin):
 
     image1_tag.short_description = 'Image 1'
     image2_tag.short_description = 'Image 2'
-    list_display = ['name_TH', 'name_ENG', 'color', 'count', 'image1_tag', 'image2_tag']
+    list_display = ['name_TH', 'name_ENG', 'count', 'image1_tag', 'image2_tag']
 
 
 class Add_pb_Admin(admin.ModelAdmin):

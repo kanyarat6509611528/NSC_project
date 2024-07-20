@@ -38,7 +38,7 @@ def register(request: HttpRequest):
             # Send email
             email = EmailMessage(
                 to=[user.email],
-                subject="Activate account หน่อยครับ",
+                subject="Please Activate account",
                 body=email_body,
             )
             email.send()
@@ -52,10 +52,12 @@ def register(request: HttpRequest):
     context = {"form": form}
     return render(request, "app_users/register.html", context)
 
+# --------------------------------------------------------------------------- 
 
 def register_thankyou(request: HttpRequest):
     return render(request, "app_users/register_thankyou.html")
 
+# --------------------------------------------------------------------------- 
 
 def activate(request: HttpRequest, uidb64: str, token: str):
     title = "Activate account เรียบร้อย"
@@ -74,6 +76,8 @@ def activate(request: HttpRequest, uidb64: str, token: str):
 
     context = {"title": title, "content": content}
     return render(request, "app_users/activate.html", context)
+
+# --------------------------------------------------------------------------- 
 
 @login_required
 def profile(request: HttpRequest):
@@ -106,9 +110,9 @@ def profile(request: HttpRequest):
         response.delete_cookie("is_saved")
     return response
 
-
 # ---------------------------------------------------------------
 
+@login_required
 def user_select(request):
     user = request.user
     user_phobias = UserPhobias.objects.filter(user=user)
@@ -120,8 +124,8 @@ def user_select(request):
             phobia_ids = request.POST.getlist('phobias')
             for phobia_id in phobia_ids:
                 phobia = Phobias.objects.get(pk=phobia_id)
-                if not UserPhobias.objects.filter(user=user, pb=phobia).exists():
-                    UserPhobias.objects.create(user=user, pb=phobia)
+                if not UserPhobias.objects.filter(user=user, phobia=phobia).exists():
+                    UserPhobias.objects.create(user=user, phobia=phobia)
             return redirect('user_select')
         elif 'delete' in request.POST:
             phobia_ids_to_delete = request.POST.getlist('phobia_ids_to_delete')
@@ -131,7 +135,7 @@ def user_select(request):
     # Exclude already selected phobias from the list
     available_phobias = []
     for phobia in phobias:
-        if not user_phobias.filter(pb=phobia).exists():
+        if not user_phobias.filter(phobia=phobia).exists():
             available_phobias.append(phobia)
 
     # Prepare context for rendering template

@@ -76,6 +76,39 @@
 
 /*--------------------------------------------------*/
 
+/* BOX */
+
+    .box-c1, .box-c2, .box-c3, .box-c4, .box-c5 {
+        padding: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+    }
+    .box-c1 p, .box-c2 p, .box-c3 p, .box-c4 p, .box-c5 p{
+        text-align: center;
+        font-size: 15px;
+        color: #ffffff;
+    }
+    .box-c1 {
+        background-color: #381f6b;
+    }
+    .box-c2 {
+        background-color: #1f2854;
+    }
+    .box-c3 {
+        background-color: #6c1e5d;
+    }
+    .box-c4 {
+        background-color: #22421f;
+    }
+    .box-c5 {
+        background-color: #544921;
+    }
+
+/*--------------------------------------------------*/
+
 /* CHECKBOX */
 
     .checkbox-wrapper .switch input {

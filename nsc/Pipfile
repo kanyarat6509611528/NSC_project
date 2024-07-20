@@ -4,23 +4,24 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-requests = "*"
 django = "*"
+requests = "*"
 mysql-connector-python = "*"
 pyktok = "*"
+tiktokapi = "*"
 beautifulsoup4 = "*"
 browser-cookie3 = "*"
 numpy = "*"
+moviepy = "*"
 pandas = "*"
 selenium = "*"
 streamlit = "*"
 mysqlclient = "*"
 python-dotenv = "*"
 opencv-python = "*"
-ffmpeg-python = "*"
+tensorflow = "==2.12"
 
 [dev-packages]
-bpython = "*"
 
 [requires]
-python_version = "3.11"
+python_version = "3.9"

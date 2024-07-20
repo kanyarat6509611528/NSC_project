@@ -11,21 +11,6 @@ class CustomUser(AbstractUser):
         through="UserPhobias",
         related_name="user_set",
     )
-    groups = models.ManyToManyField(
-        Group,
-        related_name='customuser_set',
-        blank=True,
-        help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
-        related_query_name='customuser',
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        related_name='customuser_set',
-        blank=True,
-        help_text='Specific permissions for this user.',
-        related_query_name='customuser',
-    )
-
     def __str__(self):
         return self.username
 
@@ -35,16 +20,17 @@ class UserPhobias(models.Model):
         on_delete=models.CASCADE,
         related_name="user_phobias",
     )
-    pb = models.ForeignKey(
+    phobia = models.ForeignKey(
         Phobias,
         on_delete=models.CASCADE,
         related_name="phobia_users",
     )
 
     class Meta:
+        db_table = 'UserPhobias' 
         constraints = [
-            models.UniqueConstraint(fields=("user", "pb"), name="unique_user_phobias")
+            models.UniqueConstraint(fields=("user", "phobia"), name="unique_user_phobias")
         ]
 
     def __str__(self):
-        return f"{self.user.username} - {self.pb.name}"
+        return f"{self.user.username} - {self.phobia.name}"
