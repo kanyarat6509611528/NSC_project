@@ -9,4 +9,5 @@ urlpatterns = [
     path('select', views.d_select, name='d04_select'),
     path('loading2', views.d_loading2, name='d05_loading2'),
     path('finish', views.d_finish, name='d06_finish'),
+    path('get_progress/', views.get_progress, name='get_progress'),
 ]

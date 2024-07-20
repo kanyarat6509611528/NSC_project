@@ -1,34 +1,30 @@
-from django.http.response import HttpResponse
+# Django imports
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
 from django.conf import settings
-
-from app_general.models import Phobias
 from django.apps import apps
-Phobias = apps.get_model('app_general', 'Phobias')
 
-# --------------------------------------------------------------------------- 
+# App imports
+from app_general.models import Phobias
 
-from django.core.files.base import ContentFile
-import os
-import shutil
-import pyktok as pyk 
+# Third-party imports
+import pyktok as pyk
 import cv2
-
-# --------------------------------------------------------------------------- 
-
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.models import load_model
 from moviepy.editor import VideoFileClip, AudioFileClip, ImageSequenceClip
 
-# --------------------------------------------------------------------------
-
+# Standard library imports
+import os
+import shutil
 import json
+import threading
 
-from django.db.models import Value
+# Get the Phobias model
+Phobias = apps.get_model('app_general', 'Phobias')
 
 # -----------------------------------------------------------------------
 
@@ -42,11 +38,29 @@ trained_model_path = "app_detection/static/app_detection/model/10class_model.h5"
 uploaded_video_path = "app_detection/static/app_detection/media/download_video.mp4"
 output_video_path = "app_detection/static/app_detection/video/output_video.mp4"
 
+audio_path = os.path.join(video_dir, 'original_audio.mp3')
+
 for directory in [media_dir, video_dir, frames_dir, audio_dir]:
     os.makedirs(directory, exist_ok=True)
 
 # Load the trained model
 model = load_model(trained_model_path)
+
+progress_file = "app_detection/static/app_detection/progress.txt"
+
+def update_progress(progress):
+    with open(progress_file, 'w') as f:
+        f.write(f'{progress}')
+
+def read_progress():
+    if os.path.exists(progress_file):
+        with open(progress_file, 'r') as f:
+            return int(f.read())
+    return 0
+
+def reset_progress():
+    with open(progress_file, 'w') as f:
+        f.write('0') 
 
 # --------------------------------------------------------------------------- 
 
@@ -151,8 +165,6 @@ def d_import(request):
          
                     destination.write(chunk)
         
-        extract_frames(uploaded_video_path, frames_dir)
-        
         return redirect('d02_loading1')
 
     context = {
@@ -242,28 +254,63 @@ def classify_frames(frames_dir):
     with open(percentage_path, 'w') as f:
         json.dump(class_distribution, f, indent=4)
 
+def extract_audio(uploaded_video_path, audio_dir):
+    # Create the output audio file path
+    audio_path = os.path.join(audio_dir, "original_audio.mp3")
+    
+    # Load the video file
+    video_clip = VideoFileClip(uploaded_video_path)
+    
+    # Extract audio from the video
+    audio_clip = video_clip.audio
+    
+    # Write the audio file
+    audio_clip.write_audiofile(audio_path)
+    
+    # Close the audio and video clips
+    audio_clip.close()
+    video_clip.close()
+
+    print("Extract audio complete!!!")
+
+
+def task_1():
+    extract_audio(uploaded_video_path, audio_dir)
+    update_progress(30)
+    
+    # สกัดเฟรม
+    extract_frames(uploaded_video_path, frames_dir)
+    update_progress(60)  # ส่ง 50% หลังจากสกัดเฟรม
+
+    # Classify frames
+    classify_frames(frames_dir)
+    update_progress(100)
+
+def start_task_1_thread():
+    task_thread = threading.Thread(target=task_1)
+    task_thread.start()
+    return task_thread
+
 def d_loading1(request):
     current_step = 2
-    percent = [50, 60, 70, 85, 100] # รอแก้สิ่งนี้เป็นแบบส่งตัวแปรมา
-
-    classify_frames(frames_dir)
+    
+    reset_progress()
+    start_task_1_thread()
 
     context = {
         'current_step': current_step,
-        'percent': percent
     }
+
     return render(request, 'app_detection/d02_loading1.html', context)
 
-def background_processing(request):
-
-    classify_frames(frames_dir)
-
-    return JsonResponse({'status': 'success'})
+def get_progress(request):
+    progress = read_progress()
+    return JsonResponse({'percent': progress})
 
 # --------------------------------------------------------------------------- 
 
 def d_result(request):
-    
+
     # Load percentage 
     percentage_path = "app_detection/static/app_detection/percentage.json"
     with open(percentage_path, 'r') as f:
@@ -438,13 +485,6 @@ def d_loading2(request):
     current_step = 5
     percent = [50, 60, 70, 85, 100] # รอแก้สิ่งนี้เป็นแบบส่งตัวแปรมา
 
-    # Extract audio from the original video
-    audio_path = os.path.join(audio_dir, "original_audio.mp3")
-    video_clip = VideoFileClip(uploaded_video_path)
-    audio_clip = video_clip.audio
-    audio_clip.write_audiofile(audio_path)
-    audio_clip.close()
-
     # Retrieve selected phobia IDs from session
     selected_phobias = request.session.get('selected_phobias', [])
 
@@ -471,6 +511,7 @@ def d_loading2(request):
         'percent': percent,
         'selected_phobias': selected_phobias,
     }
+    
     return render(request, 'app_detection/d05_loading2.html', context)
 
 # ---------------------------------------------------------------------------
