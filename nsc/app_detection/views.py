@@ -13,6 +13,7 @@ import pyktok as pyk
 import cv2
 import numpy as np
 import tensorflow as tf
+import concurrent.futures
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.models import load_model
 from moviepy.editor import VideoFileClip, AudioFileClip, ImageSequenceClip
@@ -37,8 +38,7 @@ trained_model_path = "app_detection/static/app_detection/model/10class_model.h5"
 
 uploaded_video_path = "app_detection/static/app_detection/media/download_video.mp4"
 output_video_path = "app_detection/static/app_detection/video/output_video.mp4"
-
-audio_path = os.path.join(video_dir, 'original_audio.mp3')
+audio_path = os.path.join(audio_dir, 'original_audio.mp3')
 
 for directory in [media_dir, video_dir, frames_dir, audio_dir]:
     os.makedirs(directory, exist_ok=True)
@@ -273,7 +273,6 @@ def extract_audio(uploaded_video_path, audio_dir):
 
     print("Extract audio complete!!!")
 
-
 def task_1():
     extract_audio(uploaded_video_path, audio_dir)
     update_progress(30)
@@ -405,8 +404,6 @@ def d_select(request):
 # --------------------------------------------------------------------------- 
 
 def blur_video(uploaded_video_path, output_video_path, segment_times):
-    import cv2
-
     cap = cv2.VideoCapture(uploaded_video_path)
     if not cap.isOpened():
         print("Error opening video file.")
@@ -424,17 +421,9 @@ def blur_video(uploaded_video_path, output_video_path, segment_times):
 
     frame_count = 0
     current_segment = 0
+    buffer = []
 
     print("Starting video blurring...")
-
-    # Read the first frame
-    ret, frame = cap.read()
-
-    if ret:
-        # Perform Gaussian blur on the first frame
-        blurred_frame = cv2.GaussianBlur(frame, (101, 101), 0)
-        out.write(blurred_frame)  # Write the blurred frame to output video
-        print("Blurred the first frame.")
 
     while cap.isOpened() and current_segment < len(segment_frames):
         ret, frame = cap.read()
@@ -443,29 +432,31 @@ def blur_video(uploaded_video_path, output_video_path, segment_times):
 
         if segment_frames[current_segment][0] <= frame_count < segment_frames[current_segment][1]:
             blurred_frame = cv2.GaussianBlur(frame, (101, 101), 0)
-            out.write(blurred_frame)
+            buffer.append(blurred_frame)
         else:
-            out.write(frame)
+            buffer.append(frame)
 
         frame_count += 1
 
         if frame_count >= segment_frames[current_segment][1]:
             current_segment += 1
 
-    while frame_count < total_frames:
-        ret, frame = cap.read()
-        if not ret:
-            break
-        out.write(frame)
-        frame_count += 1
+        if len(buffer) >= 100:  # Write in chunks of 100 frames
+            for buffered_frame in buffer:
+                out.write(buffered_frame)
+            buffer = []
 
-    # Create blurred thumbnail
+    # Write remaining frames
+    if buffer:
+        for buffered_frame in buffer:
+            out.write(buffered_frame)
 
     cap.release()
     out.release()
     cv2.destroyAllWindows()
 
     print("Video blurring completed.")
+
 
 def get_segment_times(frame_numbers):
     segment_times = [(frame_num - 1, frame_num) for frame_num in frame_numbers]
@@ -480,38 +471,54 @@ def merge_video_audio(uploaded_video_path, audio_path, output_video_path):
     audio_clip.close()
     print(f"Video merged with audio and saved to '{output_video_path}'")
 
-@login_required
-def d_loading2(request):
-    current_step = 5
-    percent = [50, 60, 70, 85, 100] # รอแก้สิ่งนี้เป็นแบบส่งตัวแปรมา
+# ----------------------------------------------------------------------------------------------
 
-    # Retrieve selected phobia IDs from session
-    selected_phobias = request.session.get('selected_phobias', [])
-
+def task_2(uploaded_video_path, output_video_path, audio_path, video_dir, results_path, selected_phobias):
     # Load classified results
-    results_path = "app_detection/static/app_detection/results.json"
     with open(results_path, 'r') as f:
         results = json.load(f)
-    
+
     # Filter frames for blur based on predicted_class_name
     frames_to_blur = [result['frame_number'] for result in results if result['predicted_class_name'] in selected_phobias]
     print(frames_to_blur)
 
     segment_times = get_segment_times(frames_to_blur)
+    update_progress(20)
 
     # Blur video based on segment times
     blur_video(uploaded_video_path, output_video_path, segment_times)
+    update_progress(60)  
 
     # Merge the blurred video with the extracted audio
     final_video_path = os.path.join(video_dir, 'final_video_with_audio.mp4')
     merge_video_audio(output_video_path, audio_path, final_video_path)
+    update_progress(100)  
+
+def start_task_2_thread(uploaded_video_path, output_video_path, audio_path, video_dir, results_path, selected_phobias):
+    task_thread = threading.Thread(target=task_2, args=(uploaded_video_path, output_video_path, audio_path, video_dir, results_path, selected_phobias))
+    task_thread.start()
+    return task_thread
+
+@login_required
+def d_loading2(request):
+    current_step = 5
+
+    # Retrieve selected phobia IDs from session
+    selected_phobias = request.session.get('selected_phobias', [])
+
+    results_path = "app_detection/static/app_detection/results.json"
+    final_video_path = os.path.join(video_dir, 'final_video_with_audio.mp4')
+    audio_path = os.path.join(audio_dir, 'original_audio.mp3')
+
+    # Reset progress and start task in thread
+    reset_progress()
+    start_task_2_thread(uploaded_video_path, output_video_path, audio_path, video_dir, results_path, selected_phobias)
 
     context = {
         'current_step': current_step,
-        'percent': percent,
         'selected_phobias': selected_phobias,
     }
-    
+
     return render(request, 'app_detection/d05_loading2.html', context)
 
 # ---------------------------------------------------------------------------
