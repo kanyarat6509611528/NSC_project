@@ -3,69 +3,171 @@
 {% block content %}
 
 {% include 'app_detection/components/statusBar.html' %}
-    <div class="home-style">
-        <h1 class="text-topic">รายละเอียดเนื้อหาในวิดีโอ</h1>
+<div class="home-style">
+    <h1 class="text-topic">รายละเอียดเนื้อหาในวิดีโอ</h1>
 
-        <div class="button-container">
-            <a href="{% url 'd03_result' %}">
-                <button class="button-next" type="button">ผลลัพธ์การประมวลผล</button>
-            </a>
-        </div>
+    <div class="button-container">
+        <a href="{% url 'd03_result' %}">
+            <button class="button-next" type="button">ผลลัพธ์การประมวลผล</button>
+        </a>
     </div>
-    {% for phobia in phobias %}
-        <div class="gallery-content">
-            <button type="button" class="collapsible">{{phobia}}</button>
-            <div class="g-content">
-                <div class="gallery">
-                    {% for prediction in results %}
-                        {% if phobia == prediction.predicted_class_name %}
-                            {% for image in image_list %}
-                                {% if forloop.counter0 == prediction.frame_number %}
-                                    <div class="gallery-item">
-                                        <a href="{% static image %}" data-lightbox="gallery" data-title="นาทีที่ {{ prediction.frame_time }}">
-                                            <img src="{% static image %}" class="blur-image">
-                                        </a>
-                                        <div class="gallery-text">นาทีที่ {{ prediction.frame_time }}</div>
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
-                        {% endif %}
-                    {% endfor %}
-                </div>
+</div>
+
+<div class="container">
+    <p class="alert-message">
+        คำเตือน: รูปภาพที่คุณกำลังจะเห็นอาจมีเนื้อหาที่กระตุ้นอาการหวาดกลัว หากคุณไม่ต้องการดูต่อ โปรดกดปุ่ม 'ผลลัพธ์การประมวลผล' เพื่อย้อนกลับ
+    </p>
+</div>
+
+{% for phobia in phobias %}
+    <div class="gallery-content">
+        <button type="button" class="collapsible">{{ phobia }}</button>
+        <div class="g-content">
+            <div class="gallery">
+                {% for prediction in results %}
+                    {% if phobia == prediction.predicted_class_name %}
+                        {% for image in image_list %}
+                            {% if forloop.counter0 == prediction.frame_number %}
+                                <div class="gallery-item">
+                                    <a href="{% static image %}" data-lightbox="gallery" data-title="นาทีที่ {{ prediction.frame_time }}">
+                                        <img src="{% static image %}" class="blur-image" alt="Image at minute {{ prediction.frame_time }}">
+                                    </a>
+                                    <div class="gallery-text">นาทีที่ {{ prediction.frame_time }}</div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
             </div>
         </div>
-    {% endfor %}
+    </div>
+{% endfor %}
+
+<!-- คำเตือน -->
+<div class="warning-container">
+    <div class="warning-content">
+        <h2>คำเตือน: รูปภาพต่อไปนี้อาจมีเนื้อหาที่กระตุ้นอาการหวาดกลัว</h2>
+        <p class="highlighted-text">โปรดอ่านข้อความนี้ก่อนเลือกดูเนื้อหา</p>
+        <p>รูปภาพในเนื้อหาต่อจากนี้เป็นตัวอย่างภาพที่ได้จากวินาทีต่าง ๆ ของวิดีโอซึ่งมีการเบลอภาพบางส่วน อาจมีเนื้อหาที่กระตุ้นอาการหวาดกลัว 
+            <br>
+            โปรดพิจารณาอย่างรอบคอบก่อนตัดสินใจเลือกดูเนื้อหาต่อไป
+        </p>
+        <button id="go-back" class="button-back">ย้อนกลับ</button>
+        <button id="accept-warning" class="button-next">ยอมรับ</button>   
+    </div>
+</div>
+
 <style>
-    .home-style {
+.home-style {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 15%;
+    margin: 0 15%;
 }
+
 .blur-image {
     filter: blur(10px);
     clip-path: inset(1px);
+    max-width: 100%;
+    height: auto;
+}
+
+.gallery-item {
+    margin: 10px;
+    display: inline-block;
+}
+
+.gallery-text {
+    text-align: center;
+    margin-top: 5px;
+}
+
+.g-content {
+    display: none;
+}
+
+.collapsible.active + .g-content {
+    display: block;
+}
+
+.container {
+    display: flex;
+    padding-left: 40px;
+}
+
+.alert-message {
+    color: #ffffff;
+    background-color: red;
+}
+
+.warning-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+}
+
+.warning-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    max-width: 80%;
+    margin: auto;
+}
+
+.warning-content h2 {
+    margin-top: 0;
+}
+
+.warning-content p { 
+    color: red; 
+    padding: 5px 50px 5px 50px; /* บน-ขวา-ล่าง-ซ้าย */ 
+    font-weight: normal; }
+
+.button-next, .button-back {
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #007BFF;
+    color: white;
+    font-size: 16px;
+}
+
+.button-back {
+    background-color: #6c757d;
 }
 </style>
 
-
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      var coll = document.querySelectorAll(".collapsible");
-  
-      coll.forEach(function(item) {
+document.addEventListener("DOMContentLoaded", function() {
+    var coll = document.querySelectorAll(".collapsible");
+    coll.forEach(function(item) {
         item.addEventListener("click", function() {
-          this.classList.toggle("active");
-          var content = this.nextElementSibling;
-          if (content.style.display === "block") {
-            content.style.display = "none";
-          } else {
-            content.style.display = "block";
-          }
+            this.classList.toggle("active");
         });
-      });
     });
 
+    var acceptButton = document.getElementById("accept-warning");
+    var warningContainer = document.querySelector(".warning-container");
+    var backButton = document.getElementById("go-back");
+
+    acceptButton.addEventListener("click", function() {
+        warningContainer.style.display = "none";
+    });
+
+    backButton.addEventListener("click", function() {
+        window.history.back();
+    });
+});
 </script>
 
 {% endblock %}

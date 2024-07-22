@@ -38,7 +38,7 @@ def register(request: HttpRequest):
             # Send email
             email = EmailMessage(
                 to=[user.email],
-                subject="เปิดใช้งานบัญชีของคุณ", # หัวข้อในอีเมล
+                subject="เปิดใช้งานบัญชีบน AI PICK Phobia System", # หัวข้อในอีเมล
                 body=email_body,
             )
             email.send()
