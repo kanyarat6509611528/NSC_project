@@ -3,6 +3,7 @@
 {% block content %}
 <div class="page-style">
     <h1 class="text-topic">แบบประเมินเบื้องต้น</h1>
+
     <div class="frame-big">
         <h2>คำแนะนำ</h2>
         <ul class="text-context">
@@ -10,6 +11,11 @@
             <li>ตอบคำถามตามความรู้สึก ความคิด และพฤติกรรมของคุณในช่วง 7 วันที่ผ่านมา</li>
             <li>เลือกคำตอบที่ตรงกับสถานการณ์ที่คุณกังวลมากที่สุด</li>
         </ul>
+    </div>
+
+    <!-- คำเตือน -->
+    <div id="warningMessage" class="warning-message" style="opacity: 0;">
+        คำเตือน: กรุณาเลือกคำตอบก่อนกดปุ่มถัดไป
     </div>
 
     <div class="frame-big">
@@ -31,14 +37,14 @@
                 <button type="submit" id="submitBtn" class="align-right rounded-button" style="display: none;">ส่งคำตอบ</button>
             </div>
         </form>
-    </div>     
+    </div>
 </div>
 
 <style>
     .button-container {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
     }
 
     .mySlides {
@@ -95,18 +101,24 @@
     .frame-big {
         width: 50%;
     }
-
+    .warning-message {
+        color: white;
+        background-color: #c33939;
+        margin-bottom: 2px;
+        transition: opacity;
+    }
 </style>
 
 <script>
     let currentSlide = 0;
     const slides = document.getElementsByClassName("mySlides");
     const progress = document.getElementById("progress");
+    const warningMessage = document.getElementById("warningMessage");
 
     function showSlide(n) {
         slides[currentSlide].classList.remove("active");
         currentSlide = n;
-        if (currentSlide >= (slides.length-1)) {
+        if (currentSlide >= (slides.length - 1)) {
             document.getElementById("submitBtn").style.display = "block";
             document.getElementById("nextBtn").style.display = "none";
         } else {
@@ -122,13 +134,28 @@
         progress.style.width = ((currentSlide + 1) / slides.length) * 100 + "%";
     }
 
+    function isOptionSelected(slide) {
+        const inputs = slide.getElementsByTagName("input");
+        for (let input of inputs) {
+            if (input.type === "radio" && input.checked) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     function changeSlide(n) {
+        warningMessage.style.opacity = "0";
+        if (n === 1 && !isOptionSelected(slides[currentSlide])) {
+            warningMessage.style.opacity = "1";
+            return;
+        }
         if (currentSlide + n >= 0 && currentSlide + n < slides.length) {
             showSlide(currentSlide + n);
         }
     }
-    showSlide(currentSlide);
 
+    showSlide(currentSlide);
 </script>
 
 {% endblock %}

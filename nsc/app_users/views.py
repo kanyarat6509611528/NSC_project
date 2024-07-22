@@ -38,7 +38,7 @@ def register(request: HttpRequest):
             # Send email
             email = EmailMessage(
                 to=[user.email],
-                subject="Please Activate account",
+                subject="เปิดใช้งานบัญชีของคุณ", # หัวข้อในอีเมล
                 body=email_body,
             )
             email.send()
