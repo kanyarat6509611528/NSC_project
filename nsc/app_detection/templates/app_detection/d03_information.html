@@ -29,9 +29,7 @@
                         {% for image in image_list %}
                             {% if forloop.counter0 == prediction.frame_number %}
                                 <div class="gallery-item">
-                                    <a href="{% static image %}" data-lightbox="gallery" data-title="นาทีที่ {{ prediction.frame_time }}">
-                                        <img src="{% static image %}" class="blur-image" alt="Image at minute {{ prediction.frame_time }}">
-                                    </a>
+                                    <img src="{% static image %}" class="blur-image" alt="Image at minute {{ prediction.frame_time }}">
                                     <div class="gallery-text">นาทีที่ {{ prediction.frame_time }}</div>
                                 </div>
                             {% endif %}
