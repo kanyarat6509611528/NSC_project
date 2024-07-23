@@ -9,5 +9,5 @@ def update_django_site(sender, **kwargs):
     if sender.name == 'django.contrib.sites':
         with connection.cursor() as cursor:
             cursor.execute(
-                "UPDATE django_site SET domain = '127.0.0.1:8000', name = 'AI PICK Phobia System' WHERE id = 1;"
+                "INSERT INTO `phobias_db`.`django_site` (`id`, `domain`, `name`) VALUES ('1', '127.0.0.1:8000', 'AI PICK Phobia System');"
             )

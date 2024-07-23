@@ -46,10 +46,12 @@ INSTALLED_APPS = [
 
     'app_general.apps.AppGeneralConfig',
     'app_detection.apps.AppDetectionConfig',
-
-    'django.contrib.sites', # ใช้ส่งอีเมล
+    
+    'django.contrib.sites',
     'django.core.mail', # ใช้ส่งอีเมล
 ]
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -157,4 +159,4 @@ if DEBUG:
     EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
     PASSWORD_RESET_TIMEOUT = 600 # 10 minutes
 
-SITE_ID = 1
+SITE_ID = 2
