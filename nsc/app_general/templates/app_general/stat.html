@@ -22,17 +22,15 @@
         </div>
     </div>
 
-    <form method="post" enctype="multipart/form-data">
+    <form id="fear-form" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="fear-content">
             <div>
                 <p class="fear-text">มีอะไรที่คุณกลัวอีกไหม</p>
             </div>
             <div class="form-container">
-                <form action="/submit-answer" method="POST">
-                    <input type="text" name="answer" placeholder="ระบุสิ่งที่คุณกลัว" required>
-                    <button class="button-go" type="submit">ส่งคำตอบ</button>
-                </form>
+                <input type="text" name="answer" placeholder="ระบุสิ่งที่คุณกลัว" required>
+                <button class="button-go" type="submit">ส่งคำตอบ</button>
             </div>
         </div>
     </form>
@@ -93,7 +91,6 @@
         border-radius: 50px;
         color:black;
     }
-    
 </style>
 
 <script>
@@ -109,7 +106,23 @@
                 }
             });
         });
-    });  
+
+        $('#fear-form').on('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Simulate form submission
+            var form = $(this);
+            $.ajax({
+                type: form.attr('method'),
+                url: form.attr('action'),
+                data: form.serialize(),
+                success: function() {
+                    alert('ขอบคุณสำหรับคำตอบของคุณ!');
+                    form[0].reset(); // Optionally reset the form
+                }
+            });
+        });
+    });
 </script>
     
 {% endblock %}
