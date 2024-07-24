@@ -6,14 +6,16 @@ from django.conf import settings
 from django.apps import apps
 
 # App imports
-from app_general.models import Phobias
+from app_general.models import Phobias, UserPhobias
+from django.db import connection
+from django.db.models.expressions import RawSQL
+
 
 # Third-party imports
 import pyktok as pyk
 import cv2
 import numpy as np
 import tensorflow as tf
-import concurrent.futures
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.models import load_model
 from moviepy.editor import VideoFileClip, AudioFileClip, ImageSequenceClip
@@ -363,19 +365,31 @@ def d_information(request):
 # --------------------------------------------------------------------------- 
 
 def d_select(request):
+    # โหลดข้อมูลผลลัพธ์จาก JSON
     result_path = "app_detection/static/app_detection/results.json"
     with open(result_path, 'r') as f:
         results = json.load(f)
     
+    user_id = request.user.id
+    
+     # ใช้ RawSQL เพื่อสร้างชื่อที่รวมกัน
+    user_phobias = UserPhobias.objects.filter(user_id=user_id).annotate(
+        combined_name=RawSQL(
+            """
+            SELECT CONCAT(agp.name_TH, ' (', agp.name_ENG, ')')
+            FROM app_general_phobias agp
+            WHERE agp.id = userphobias.phobia_id
+            """,
+            []
+        )
+    ).values_list('combined_name', flat=True)
+    
+
     pb = Phobias.objects.all().order_by('name_ENG')
     pb_name = [f'{phobia.name_TH} ({phobia.name_ENG})' for phobia in pb]
-    filtered_phobias = []
-    for phobia in pb_name:
-        if any(result['predicted_class_name'] == phobia for result in results):
-            filtered_phobias.append(phobia)
+    filtered_phobias = [phobia for phobia in pb_name if any(result['predicted_class_name'] == phobia for result in results)]
 
     current_step = 4 
-
     selected_phobias = []
 
     if request.method == 'POST':
@@ -396,7 +410,8 @@ def d_select(request):
     context = {
         'current_step': current_step,
         'phobias': filtered_phobias,
-        'selected_phobias': selected_phobias
+        'user_phobias': user_phobias,
+        'selected_phobias': selected_phobias,
     }
 
     return render(request, 'app_detection/d04_select.html', context)

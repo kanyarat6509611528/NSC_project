@@ -17,3 +17,10 @@ class Add_pb(models.Model):
     pb_data = models.CharField(max_length=500)
     pb_status = models.CharField(max_length=100, choices=STATUS, default='unread')
     pb_time = models.DateTimeField(auto_now_add=True)
+
+class UserPhobias(models.Model): 
+    user_id = models.BigIntegerField()  
+    phobia_id = models.BigIntegerField()
+
+    class Meta:
+        db_table = 'userphobias'
