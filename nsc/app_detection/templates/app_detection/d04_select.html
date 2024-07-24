@@ -20,6 +20,7 @@
                             <div>
                                 <label class="switch">
                                     <input type="checkbox" id="checkbox{{ phobia }}" name="phobias" value="{{ phobia }}" />
+                                    {% if phobia in user_phobias %} checked {% endif %} />
                                     <div class="slider round"></div>
                                 </label>
                                 <p>{{ phobia }}</p>

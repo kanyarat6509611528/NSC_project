@@ -18,7 +18,7 @@
                         <img src="{% static 'app_detection/frames/frame_0000.jpg' %}" class="blur-image">
                         <div class="vignette"></div>
                     </div>
-                    <button class="red-button" onclick="plusSlides(1)" style="justify-content: center; margin-top: 2%;">คลิกเพื่อรับชมวิดีโอ</button>
+                    <button id="play-video" class="red-button" style="justify-content: center; margin-top: 2%;">คลิกเพื่อรับชมวิดีโอ</button>
                 </div>
 
                 <!-- PAGE 2 -->
@@ -64,11 +64,24 @@
     </div>
 </div>
 
+<!-- คำเตือน -->
+<div class="warning-container" id="warning-popup" style="display: none;">
+    <div class="warning-content">
+        <h2>คำเตือน: วิดีโอต่อไปนี้อาจกระตุ้นอาการหวาดกลัว</h2>
+        <p>วิดีโอนี้เป็นต้นฉบับ ไม่มีการเบลอเนื้อหา อาจมีภาพหรือเสียงที่กระตุ้นอาการหวาดกลัว โปรดพิจารณาก่อนดูวิดีโอ<br> 
+            หากคุณมีอาการตื่นกลัว วิตกกังวลรุนแรง ควบคุมตัวเองไม่ได้ หัวใจเต้นเร็ว หายใจถี่ ความดันเลือดสูง เหงื่อออก คลื่นไส้<br><br>
+            <b>กรุณาหยุดการรับชมทันที</b>
+        </p>
+        <button id="go-back" class="button-back">ยกเลิก</button>
+        <button id="accept-warning" class="button-next">ยอมรับ</button>   
+    </div>
+</div>
+
 <style>
     .video-container {
-            width: 324px;
-            height: 576px;
-        }
+        width: 324px;
+        height: 576px;
+    }
     .blur-image-container {
         position: relative;
         width: 324px;
@@ -127,17 +140,94 @@
         align-items: center;
         padding: 0 5%;
     }
+    
+    .warning-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+    }
+
+    .warning-content {
+        background: white;
+        padding: 20px;
+        border-radius: 5px;
+        text-align: center;
+        max-width: 80%;
+        margin: auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .warning-content h2 {
+        margin-top: 0;
+    }
+
+    .warning-content p {
+        color: red;
+        padding: 5px 50px; /* บน-ขวา-ล่าง-ซ้าย */
+        font-weight: normal;
+    }
+
+    .button-back, .button-next {
+        margin: 10px;
+    }
 </style>
 
 <script>
-    var slideIndex = 0;
-    var slides = document.getElementsByClassName("mySlides");
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const warningPopup = document.getElementById('warning-popup');
+        const playVideoButton = document.getElementById('play-video');
+        const acceptWarningButton = document.getElementById('accept-warning');
+        const goBackButton = document.getElementById('go-back');
+        const slides = document.getElementsByClassName('mySlides');
+        let slideIndex = 0;
 
-    function plusSlides(n) {
-        slides[slideIndex].classList.remove('active-slide');
-        slideIndex = (slideIndex + n + slides.length) % slides.length;
-        slides[slideIndex].classList.add('active-slide');
-    }
+        // ฟังก์ชันสำหรับแสดง pop-up คำเตือน
+        function showWarning() {
+            warningPopup.style.display = 'block';
+        }
+
+        // ฟังก์ชันสำหรับซ่อน pop-up คำเตือนและแสดง slide ถัดไป
+        function hideWarning() {
+            warningPopup.style.display = 'none';
+            plusSlides(1); // เปลี่ยนไปที่ slide ถัดไป
+        }
+
+        // ฟังก์ชันสำหรับเปลี่ยน slide
+        function plusSlides(n) {
+            slides[slideIndex].classList.remove('active-slide');
+            slideIndex = (slideIndex + n + slides.length) % slides.length;
+            slides[slideIndex].classList.add('active-slide');
+        }
+
+        // เพิ่ม event listener ให้กับปุ่มเล่นวิดีโอ
+        playVideoButton.addEventListener('click', (event) => {
+            event.preventDefault(); // ป้องกันการทำงานของปุ่มตามค่าเริ่มต้น
+            showWarning(); // แสดง pop-up คำเตือน
+        });
+
+        // เพิ่ม event listener ให้กับปุ่มยอมรับ
+        acceptWarningButton.addEventListener('click', (event) => {
+            hideWarning(); // ซ่อน pop-up คำเตือน และแสดง slide ถัดไป
+        });
+
+        // เพิ่ม event listener ให้กับปุ่มยกเลิก
+        goBackButton.addEventListener('click', (event) => {
+            event.preventDefault(); // ป้องกันการทำงานของปุ่มตามค่าเริ่มต้น
+            warningPopup.style.display = 'none'; // ซ่อน pop-up คำเตือน
+        });
+
+        window.plusSlides = plusSlides; // ทำให้ฟังก์ชัน plusSlides สามารถเข้าถึงได้จากที่อื่น
+    });
 </script>
 
 {% endblock %}

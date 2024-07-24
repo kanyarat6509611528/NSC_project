@@ -440,6 +440,15 @@ def blur_video(uploaded_video_path, output_video_path, segment_times):
 
     print("Starting video blurring...")
 
+    # Read the first frame
+    ret, frame = cap.read()
+
+    if ret:
+        # Perform Gaussian blur on the first frame
+        blurred_frame = cv2.GaussianBlur(frame, (101, 101), 0)
+        out.write(blurred_frame)  # Write the blurred frame to output video
+        print("Blurred the first frame.")
+
     while cap.isOpened() and current_segment < len(segment_frames):
         ret, frame = cap.read()
         if not ret:
