@@ -156,6 +156,12 @@
     }
 
     showSlide(currentSlide);
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            changeSlide(1);
+        }
+    });
 </script>
 
 {% endblock %}
