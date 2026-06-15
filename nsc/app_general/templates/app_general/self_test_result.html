@@ -1,0 +1,90 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block content %}
+<div class="page-style">
+    <h1 class="text-topic">แบบประเมินเบื้องต้น</h1>
+    <div class="frame-big">
+        <h2>คำแนะนำ</h2>
+        <ul class="text-context">
+            <li>แบบทดสอบนี้ใช้ประเมินความรุนแรงของโรคกลัวในสถานการณ์ต่าง ๆ เช่น กลัวที่สูง กลัวที่แคบ กลัวสัตว์  </li>
+            <li>ตอบคำถามตามความรู้สึก ความคิด และพฤติกรรมของคุณในช่วง 7 วันที่ผ่านมา</li>
+            <li>เลือกคำตอบที่ตรงกับสถานการณ์ที่คุณกังวลมากที่สุด</li>
+        </ul>
+    </div>
+
+    <div class="frame-big">
+        <h2>ผลลัพธ์</h2>
+        <ul class="result-context">
+            <p>คะแนนรวมทั้งหมด: {{ score }} คะแนน</p>
+            <p>ผลการประเมิน: {{ message }}</p>
+            <p>{{ information }}</p>
+        </ul>
+        <br><p class="warning">หมายเหตุ: หากคุณมีความกังวลว่าคุณหรือคนที่คุณรู้จักอาจเป็นโรคกลัว  สิ่งที่ดีที่สุดคือควรปรึกษาแพทย์หรือผู้เชี่ยวชาญด้านสุขภาพจิต</p>
+        <a href="{% url 'home' %}">
+            <button class="button-next" type="button">กลับสู่หน้าหลัก</button>
+        </a>         
+</div>
+
+<style>
+    .text-context{
+        text-align: left;
+        color:#c6a44e;
+    }
+    .result-context{
+        width: 98%;
+        text-align: left;
+        color:#ffffff;
+    }
+    .warning {
+        justify-content: center;
+        width: 75%;
+        text-align: center;
+        color: #fff0dc;
+        background-color: #c33939;
+        margin: 0 auto;
+        margin-bottom: 5%;
+
+    }
+    .page-style {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 5%;
+        color: white;
+    }
+    .frame-big {
+        width: 50%;
+    }
+    .page-context {
+        margin: 40px 80px;
+    }
+    .form-field {
+        margin-bottom: 15px;
+        text-align: left;
+    }
+    .form-field label {
+        display: block;
+        color: white;
+        margin-bottom: 5px;
+    }
+    .form-field input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    .text-group {
+        display: flex;
+        justify-content: center;
+        margin-top: 15px;
+    }
+    .text-group p {
+        margin: 0;
+        margin-right: 5px;
+    }
+    .text-group a {
+        color: #c6a44e;
+    }
+
+</style>
+{% endblock %}

@@ -1,0 +1,167 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block content %}
+<div class="page-style">
+    <h1 class="text-topic">แบบประเมินเบื้องต้น</h1>
+
+    <div class="frame-big">
+        <h2>คำแนะนำ</h2>
+        <ul class="text-context">
+            <li>แบบทดสอบนี้ใช้ประเมินความรุนแรงของโรคกลัวในสถานการณ์ต่าง ๆ เช่น กลัวที่สูง กลัวที่แคบ กลัวสัตว์  </li>
+            <li>ตอบคำถามตามความรู้สึก ความคิด และพฤติกรรมของคุณในช่วง 7 วันที่ผ่านมา</li>
+            <li>เลือกคำตอบที่ตรงกับสถานการณ์ที่คุณกังวลมากที่สุด</li>
+        </ul>
+    </div>
+
+    <!-- คำเตือน -->
+    <div id="warningMessage" class="warning-message" style="opacity: 0;">
+        กรุณาเลือกคำตอบก่อนกดปุ่มถัดไป
+    </div>
+
+    <div class="frame-big">
+        <form method="post">
+            {% csrf_token %}
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            <div class="slideshow-container">
+                {% for field in form %}
+                    <div class="mySlides" id="question_{{ forloop.counter }}">
+                        {{ field.label_tag }}{{ field }}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="button-container">
+                <button type="button" id="prevBtn" class="align-left rounded-button" onclick="changeSlide(-1)">&lt; ย้อนกลับ</button>
+                <button type="button" id="nextBtn" class="align-right rounded-button" onclick="changeSlide(1)">ถัดไป &gt;</button>
+                <button type="submit" id="submitBtn" class="align-right rounded-button" style="display: none;">ส่งคำตอบ</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+    }
+
+    .mySlides {
+        display: none;
+        text-align: left;
+        margin: 10px 30px;
+        padding: 10px;
+    }
+    .mySlides label {
+        display: flex;
+        gap: 10px;
+    }
+    .mySlides input {
+        margin-left: 20px;
+    }
+    .active { 
+        display: block; 
+    }
+    .progress-bar {
+        width: 100%;
+        border-radius: 10px;
+        background-color: #f3f3f3;
+        margin-bottom: 3%;
+    }
+    .progress { 
+        width: 0%;
+        height: 25px;
+        border-radius: 10px;
+        border: 2px solid rgb(255, 255, 255);
+        transition: width 1s ease-in-out; /* Smooth transition */
+        background: linear-gradient(to right, #70ea93, #36b5c6, #70ea93);
+        background-size: 200% 100%; /* Adjust size for the number of colors */
+        animation: rainbow 3s linear infinite, growBar 10s forwards;
+    }
+    @keyframes rainbow {
+        0% {
+            background-position: 100% 0;
+        }
+        100% {
+            background-position: -100% 0;
+        }
+    }
+    .text-context{
+        text-align: left;
+        color: #c6a44e;
+    }
+    .page-style {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 5%;
+        color: white;
+    }
+    .frame-big {
+        width: 50%;
+    }
+    .warning-message {
+        color: white;
+        background-color: #c33939;
+        margin-bottom: 2px;
+        transition: opacity;
+    }
+</style>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.getElementsByClassName("mySlides");
+    const progress = document.getElementById("progress");
+    const warningMessage = document.getElementById("warningMessage");
+
+    function showSlide(n) {
+        slides[currentSlide].classList.remove("active");
+        currentSlide = n;
+        if (currentSlide >= (slides.length - 1)) {
+            document.getElementById("submitBtn").style.display = "block";
+            document.getElementById("nextBtn").style.display = "none";
+        } else {
+            document.getElementById("submitBtn").style.display = "none";
+            document.getElementById("nextBtn").style.display = "block";
+        }
+        if (currentSlide <= 0) {
+            document.getElementById("prevBtn").style.display = "none";
+        } else {
+            document.getElementById("prevBtn").style.display = "block";
+        }
+        slides[currentSlide].classList.add("active");
+        progress.style.width = ((currentSlide + 1) / slides.length) * 100 + "%";
+    }
+
+    function isOptionSelected(slide) {
+        const inputs = slide.getElementsByTagName("input");
+        for (let input of inputs) {
+            if (input.type === "radio" && input.checked) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function changeSlide(n) {
+        warningMessage.style.opacity = "0";
+        if (n === 1 && !isOptionSelected(slides[currentSlide])) {
+            warningMessage.style.opacity = "1";
+            return;
+        }
+        if (currentSlide + n >= 0 && currentSlide + n < slides.length) {
+            showSlide(currentSlide + n);
+        }
+    }
+
+    showSlide(currentSlide);
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            changeSlide(1);
+        }
+    });
+</script>
+
+{% endblock %}

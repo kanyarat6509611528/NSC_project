@@ -1,0 +1,235 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block content %}
+
+{% include 'app_detection/components/statusBar.html' %}
+<div class="home-style">
+    <h1 class="text-topic">ผลลัพธ์การประมวลผล</h1>
+</div>
+
+<div class="container-fluid">
+    <div class="frame-big">
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-md-4 d-flex justify-content-end" style="margin-top: 2%;">
+                <!-- PAGE 1 -->
+                <div class="mySlides active-slide">
+                    <div class="blur-image-container">
+                        <img src="{% static 'app_detection/frames/frame_0000.jpg' %}" class="blur-image">
+                        <div class="vignette"></div>
+                    </div>
+                    <button id="play-video" class="red-button" style="justify-content: center; margin-top: 2%;">คลิกเพื่อรับชมวิดีโอ</button>
+                </div>
+
+                <!-- PAGE 2 -->
+                <div class="mySlides">
+                    <div class="video-container">
+                        <video width="324" height="576" controls>
+                            <source src="{% static 'app_detection/media/download_video.mp4' %}" type="video/mp4">
+                        </video>
+                    </div>
+                    <button class="red-button" onclick="plusSlides(-1)" style="justify-content: center; margin-top: 2%;">คลิกเพื่อซ่อนวิดีโอ</button>
+                </div>
+            </div>
+    
+            <!-- Right Column -->
+            <div class="col-md-7" style="margin-right: 20px;">
+                <div class="context">
+                    <h4> เนื้อหาในวิดีโอส่วนใหญ่เกี่ยวข้องกับ {{ max_name }} </h4>
+                    <h4>  คิดเป็น {{ max_percent }} % </h4>
+                </div>
+
+                <div class="frame-small">
+                    <p>สัดส่วนเนื้อหาในวิดีโอ</p>
+                    <hr>
+                    {% include 'app_detection/components/barChart.html' %}
+                </div>
+
+                <div class="button-container">
+                    <a href="{% url 'd03_information' %}">
+                        <button class="button-back" type="button">รายละเอียด</button>
+                    </a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'd04_select' %}">
+                            <button class="button-next" type="button">เลือกเนื้อหาที่ต้องการหลีกเลี่ยง</button>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'home' %}">
+                            <button class="button-next" type="button">กลับสู่หน้าหลัก</button>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- คำเตือน -->
+<div class="warning-container" id="warning-popup" style="display: none;">
+    <div class="warning-content">
+        <h2>คำเตือน: วิดีโอต่อไปนี้อาจกระตุ้นอาการหวาดกลัว</h2>
+        <p>วิดีโอนี้เป็นต้นฉบับ ไม่มีการเบลอเนื้อหา อาจมีภาพหรือเสียงที่กระตุ้นอาการหวาดกลัว<br>
+            โปรดพิจารณาก่อนดูวิดีโอ หากคุณมีอาการตื่นกลัว วิตกกังวลรุนแรง ควบคุมตัวเองไม่ได้<br>
+            หัวใจเต้นเร็ว หายใจถี่ ความดันเลือดสูง เหงื่อออก คลื่นไส้<br> 
+            <br>
+            <b>กรุณาหยุดการรับชมทันที</b>
+        </p>
+        <button id="go-back" class="button-back">ยกเลิก</button>
+        <button id="accept-warning" class="button-next">ยอมรับ</button>   
+    </div>
+</div>
+
+<style>
+    .video-container {
+        width: 324px;
+        height: 576px;
+    }
+    .blur-image-container {
+        position: relative;
+        width: 324px;
+        height: 576px;
+    }
+    .blur-image {
+        width: 100%;
+        height: 100%;
+        filter: blur(8px);
+        clip-path: inset(1px);
+    }
+    .vignette {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 50%;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+    }
+    .mySlides {
+        display: none;
+    }
+    .active-slide {
+        display: block;
+    }
+    .home-style {
+        text-align: center;
+        color: white;
+    }
+    .frame-big h4 {
+        text-align: left;
+        padding-left: 10%;
+        color: #ffffff;
+    }
+    .frame-big {
+        width: 80%;
+    }
+    .frame-small {
+        width: 90%;
+    }
+    .frame-small p {
+        text-align: left;
+        padding-left: 5%;
+        font-size: 1em;
+        color: #ffffff;
+    }
+    .frame-small hr {
+        margin: 20px auto;
+        border: none;
+        border-top: 1px solid #ccc;
+        width: 90%; /* กำหนดความยาวของเส้น */
+    }
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 5%;
+    }
+    
+    .warning-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+    }
+
+    .warning-content {
+        background: white;
+        padding: 20px;
+        border-radius: 5px;
+        text-align: center;
+        max-width: 80%;
+        margin: auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .warning-content h2 {
+        margin-top: 10px;
+    }
+
+    .warning-content p {
+        color: red;
+        padding: 10px 50px; /* บน-ขวา-ล่าง-ซ้าย */
+        font-weight: normal;
+    }
+
+    .button-back, .button-next {
+        margin: 10px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const warningPopup = document.getElementById('warning-popup');
+        const playVideoButton = document.getElementById('play-video');
+        const acceptWarningButton = document.getElementById('accept-warning');
+        const goBackButton = document.getElementById('go-back');
+        const slides = document.getElementsByClassName('mySlides');
+        let slideIndex = 0;
+
+        // ฟังก์ชันสำหรับแสดง pop-up คำเตือน
+        function showWarning() {
+            warningPopup.style.display = 'block';
+        }
+
+        // ฟังก์ชันสำหรับซ่อน pop-up คำเตือนและแสดง slide ถัดไป
+        function hideWarning() {
+            warningPopup.style.display = 'none';
+            plusSlides(1); // เปลี่ยนไปที่ slide ถัดไป
+        }
+
+        // ฟังก์ชันสำหรับเปลี่ยน slide
+        function plusSlides(n) {
+            slides[slideIndex].classList.remove('active-slide');
+            slideIndex = (slideIndex + n + slides.length) % slides.length;
+            slides[slideIndex].classList.add('active-slide');
+        }
+
+        // เพิ่ม event listener ให้กับปุ่มเล่นวิดีโอ
+        playVideoButton.addEventListener('click', (event) => {
+            event.preventDefault(); // ป้องกันการทำงานของปุ่มตามค่าเริ่มต้น
+            showWarning(); // แสดง pop-up คำเตือน
+        });
+
+        // เพิ่ม event listener ให้กับปุ่มยอมรับ
+        acceptWarningButton.addEventListener('click', (event) => {
+            hideWarning(); // ซ่อน pop-up คำเตือน และแสดง slide ถัดไป
+        });
+
+        // เพิ่ม event listener ให้กับปุ่มยกเลิก
+        goBackButton.addEventListener('click', (event) => {
+            event.preventDefault(); // ป้องกันการทำงานของปุ่มตามค่าเริ่มต้น
+            warningPopup.style.display = 'none'; // ซ่อน pop-up คำเตือน
+        });
+
+        window.plusSlides = plusSlides; // ทำให้ฟังก์ชัน plusSlides สามารถเข้าถึงได้จากที่อื่น
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'app_users/components/profile_base.html' %}
+{% load static %}
+{% block content-profile %}
+
+<div class="frame-small">
+  <h4 style="margin-bottom: 5%;">แก้ไขข้อมูลส่วนตัว</h4>
+  {% if flash_message %}
+    <p style="color: rgb(0, 171, 0);">{{ flash_message }}</p>
+  {% endif %}
+
+  <div style="width: 80%; margin: 0 auto; display: flex; justify-content: center;">
+    <form action="{% url 'profile' %}" method="POST" style="width: 100%;">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="form-field" style="text-align: center;">
+            {{ form.username.label_tag }}
+            {{ form.username }}
+            {{ form.username.errors }}
+        </div>
+
+        <div class="form-field" style="text-align: center;">
+            {{ form.email.label_tag }}
+            {{ form.email }}
+            {{ form.email.errors }}
+        </div>
+
+        <button class="button-next" type="submit">บันทึก</button>
+    </form>
+</div>
+
+{% endblock %}
+

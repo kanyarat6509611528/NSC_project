@@ -1,0 +1,12 @@
+{% extends 'app_users/components/register_base.html' %}
+{% load static %}
+{% block content-register %}
+  <div style="margin:5%;">
+    <h3>ขอบคุณสำหรับการสมัครสมาชิก</h3>
+    <p>รระบบได้ส่งอีเมลยืนยันตัวตนให้คุณเรียบร้อยแล้ว กรุณาตรวจสอบ</p>
+    <br>
+    <a href="{% url 'login' %}">
+      <button class="button-next" type="button">เข้าสู่ระบบ</button>
+    </a>
+  </div>
+{% endblock %}

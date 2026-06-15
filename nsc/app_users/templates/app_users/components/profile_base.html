@@ -1,0 +1,79 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="home-style">
+  <h1 class="text-topic">ข้อมูลส่วนตัว</h1>
+</div>
+    <div class="frame-big" style="width: 70%;">
+    <section>
+        <div>
+            <p>
+                <h2>สวัสดี {{ user.username }}</h2>
+                <a href="{% url 'user_select' %}" style="margin-right: 10px;">จัดการเนื้อหา</a>
+                <a href="{% url 'profile' %}" style="margin-right: 10px;">แก้ไขข้อมูลส่วนตัว</a>
+                <a href="{% url 'password_change' %}" style="margin-right: 10px;">เปลี่ยนรหัสผ่าน</a>
+                {% if user.is_superuser %}
+                <a href="{% url 'admin:index' %}" style="color: #4ec0c6;">เข้าสู่หน้าดูแลระบบ</a>
+                {% endif %}
+            </p>
+            {% block content-profile %} {% endblock %}
+
+        </div>
+    </section>
+</div>
+</div>
+
+<style>
+  .home-style {
+      text-align: center;
+      color: white;
+  }
+  .frame-big {
+      color: #ffffff;
+  }
+  .frame-big p {
+      text-align: left;
+      padding-left: 10%;
+      font-size: 1em;
+      color: #ffffff;
+  }
+  .frame-big a {
+      color: #c6a44e;
+  }
+  .frame-small {
+      width: 90%;
+  }
+  .frame-small p {
+      text-align: left;
+      padding-left: 5%;
+      font-size: 1em;
+      color: #ffffff;
+  }
+  .frame-small hr {
+      margin: 20px auto;
+      border: none;
+      border-top: 1px solid #ccc;
+      width: 90%; /* กำหนดความยาวของเส้น */
+  }
+  .button-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 5%;
+  }
+  .form-field {
+      display: flex;
+      margin-bottom: 15px;
+      text-align: center;
+  }
+  .form-field label {
+    color: white;
+    flex: 0.3;
+}
+.form-field input {
+    flex: 2;
+}
+</style>
+  
+{% endblock %}

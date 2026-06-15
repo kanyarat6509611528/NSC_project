@@ -1,0 +1,46 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block content %}
+<div class="page-style">
+    <h1 class="text-topic">เข้าสู่ระบบ</h1>
+    <div class="frame-big">
+        {% block content-login %} {% endblock %}
+    </div>
+</div>
+
+<style>
+    .page-style {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 5%;
+        color: white;
+    }
+    .frame-big {
+        width: 40%;
+    }
+    .page-context {
+        margin: 40px 80px;
+    }
+    .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+    }
+    .form-group a{
+        color: #838383;
+    }
+    .text-group {
+        display: flex;
+        justify-content: center;
+        margin-top: 15px;
+    }
+    .text-group p {
+        margin: 0;
+        margin-right: 5px;
+    }
+    .text-group a {
+        color: #c6a44e;
+    }
+
+</style>
+{% endblock %}

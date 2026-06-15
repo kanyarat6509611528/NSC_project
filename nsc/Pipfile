@@ -1,0 +1,27 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+requests = "*"
+mysql-connector-python = "*"
+pyktok = "*"
+tiktokapi = "*"
+beautifulsoup4 = "*"
+browser-cookie3 = "*"
+numpy = "*"
+moviepy = "*"
+pandas = "*"
+selenium = "*"
+streamlit = "*"
+mysqlclient = "*"
+python-dotenv = "*"
+opencv-python = "*"
+tensorflow = "==2.12"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"

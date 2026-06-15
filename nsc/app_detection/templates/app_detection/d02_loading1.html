@@ -1,0 +1,39 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block content %}
+
+{% include 'app_detection/components/statusBar.html' %}
+<div class="page-style">
+    <h1 class="text-topic">กรุณารอสักครู่</h1>
+</div>
+
+{% include 'app_detection/components/loadBar.html' %}
+
+<script>
+    const progressBar = document.getElementById('progress-bar');
+
+    function updateProgress() {
+        fetch("{% url 'get_progress' %}")
+            .then(response => response.json())
+            .then(data => {
+                const percent = data.percent;
+                progressBar.innerHTML = percent + '%';
+                progressBar.style.width = percent + '%';
+                
+                if (percent < 100) {
+                    setTimeout(updateProgress, 1000); // เรียก updateProgress ทุก ๆ 1 วินาที
+                } else {
+                    progressBar.innerHTML = "Completed";
+                    setTimeout(() => {
+                        window.location.href = "{% url 'd03_result' %}";
+                    }, 1500);
+                }
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateProgress(); // เริ่มต้นการอัปเดต progress
+    });
+</script>
+
+{% endblock %}

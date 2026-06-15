@@ -1,0 +1,54 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block content %}
+<div class="page-style">
+    <h1 class="text-topic">สมัครสมาชิก</h1>
+    <div class="frame-big">
+        {% block content-register %} {% endblock %}
+    </div>
+</div>
+
+<style>
+    .page-style {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 5%;
+        color: white;
+    }
+    .frame-big {
+        width: 40%;
+    }
+    .page-context {
+        margin: 40px 80px;
+    }
+    .form-field {
+        margin-bottom: 15px;
+        text-align: left;
+    }
+    .form-field label {
+        display: block;
+        color: white;
+        margin-bottom: 5px;
+    }
+    .form-field input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    .text-group {
+        display: flex;
+        justify-content: center;
+        margin-top: 15px;
+    }
+    .text-group p {
+        margin: 0;
+        margin-right: 5px;
+    }
+    .text-group a {
+        color: #c6a44e;
+    }
+
+</style>
+{% endblock %}

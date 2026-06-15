@@ -1,0 +1,100 @@
+<dl>
+    {% for phobia in phobias %}
+    <dd class="percentage-bar" style="--bar-percent: {{ phobia.percent }};">
+        <span class="phobia-name">{{ phobia.name }}</span>
+        <span class="percentage-label col-md-2">{{ phobia.percent }}%</span>
+    </dd>
+    {% endfor %}
+</dl>
+
+<button onclick="sortPhobiasDescending()" class="sub-button">เรียงตามอันดับ</button>
+<button onclick="resetSorting()" class="sub-button">เรียงตามอักษร</button>
+
+<style>
+    dl {
+        display: flex;
+        flex-direction: column;
+        width: 90%;
+        position: relative;
+        padding: 20px;
+        color: #ffffff;
+    }
+
+    .phobia-name {
+        display: flex;
+        align-items: center;
+        height: 40px;
+        width: 40%; /* Adjust width as needed */
+        position: absolute;
+        justify-content: flex-end;
+    }
+
+    .percentage-bar {
+        font-size: 0.8em;
+        line-height: 1;
+        width: 100%;
+        height: 20px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .percentage-bar::after {
+        content: "";
+        display: block;
+        background-color: #c6a44e;
+        width: 0; /* Start with width 0 */
+        height: 90%;
+        position: absolute;
+        top: 50%;
+        left: 45%; /* Start after the phobia name */
+        transform: translateY(-50%);
+        animation: growBar 2s forwards; /* Apply the animation */
+    }
+
+    @keyframes growBar {
+        to {
+            width: calc(0.7% * var(--bar-percent)); /* Grow to the calculated width with a max limit */
+        }
+    }
+
+    .percentage-label {
+        
+        position: absolute;
+        padding-left: 13%; /* Initially align with the starting point of the bar */
+        left: 30%;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1em;
+        color: #ffffff;
+        z-index: 1;
+        animation: slideLabel calc(2s - 0.5s) forwards; /* Sync with growBar animation duration */
+    }
+
+    @keyframes slideLabel {
+        to {
+            left: calc(35% + (0.7% * var(--bar-percent))); /* Slide to the calculated width position */
+        }
+    }
+</style>
+
+<script>
+    var originalOrder = document.querySelectorAll('.percentage-bar');
+
+    function sortPhobiasDescending() {
+        var items = document.querySelectorAll('.percentage-bar');
+        var sortedItems = Array.from(items).sort((a, b) => {
+            var percentA = parseFloat(a.style.getPropertyValue('--bar-percent'));
+            var percentB = parseFloat(b.style.getPropertyValue('--bar-percent'));
+            return percentB - percentA;
+        });
+        var dl = document.querySelector('dl');
+        sortedItems.forEach(item => dl.appendChild(item));
+    }
+
+    function resetSorting() {
+        var dl = document.querySelector('dl');
+        originalOrder.forEach(item => dl.appendChild(item));
+    }
+</script>
